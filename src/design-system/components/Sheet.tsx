@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
+import { useHasMounted } from "@/lib/use-has-mounted";
 
 export type SheetProps = {
   open: boolean;
@@ -13,6 +14,8 @@ export type SheetProps = {
 };
 
 export function Sheet({ open, onClose, title, children, className }: SheetProps) {
+  const mounted = useHasMounted();
+
   useEffect(() => {
     if (!open) return;
 
@@ -30,7 +33,7 @@ export function Sheet({ open, onClose, title, children, className }: SheetProps)
     };
   }, [open, onClose]);
 
-  if (!open || typeof document === "undefined") return null;
+  if (!open || !mounted) return null;
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center">

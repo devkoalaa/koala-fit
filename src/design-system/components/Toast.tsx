@@ -1,14 +1,9 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
+import { useHasMounted } from "@/lib/use-has-mounted";
 
 type ToastVariant = "default" | "success" | "danger";
 type ToastItem = { id: string; message: string; variant: ToastVariant };
@@ -29,6 +24,7 @@ const DISMISS_AFTER_MS = 3500;
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const mounted = useHasMounted();
 
   const show = useCallback((message: string, variant: ToastVariant = "default") => {
     const id = crypto.randomUUID();
@@ -43,7 +39,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      {typeof document !== "undefined" &&
+      {mounted &&
         createPortal(
           <div
             className="pointer-events-none fixed inset-x-0 bottom-24 z-[60] flex flex-col items-center gap-2 px-4"
