@@ -6,9 +6,10 @@ import { db } from "@/db/client";
 import { workouts, routines, sets, cardioSessions, exercises } from "@/db/schema";
 import { formatDateBR } from "@/lib/date";
 import { getAllTimePersonalRecords } from "@/lib/personal-records";
-import { Card } from "@/design-system/components/Card";
 import { EmptyState } from "@/design-system/components/EmptyState";
-import { FeelingIcon } from "@/components/FeelingIcon";
+import { EditableExerciseGroup } from "./EditableExerciseGroup";
+import { EditableCardioCard } from "./EditableCardioCard";
+import { EditableFeeling } from "./EditableFeeling";
 
 export default async function WorkoutDetailPage({
   params,
@@ -47,6 +48,7 @@ export default async function WorkoutDetailPage({
 
   const cardio = await db
     .select({
+      exerciseId: cardioSessions.exerciseId,
       exerciseName: exercises.name,
       durationSeconds: cardioSessions.durationSeconds,
       distanceMeters: cardioSessions.distanceMeters,
@@ -79,12 +81,12 @@ export default async function WorkoutDetailPage({
       <div>
         <p className="text-sm text-text-secondary">{formatDateBR(workout.date)}</p>
         <h1 className="text-2xl font-bold text-text">{routine?.name ?? "Treino livre"}</h1>
-        <p className="flex items-center gap-1.5 text-sm text-text-secondary">
-          <span>
+        <div className="mt-1 flex items-center justify-between">
+          <p className="text-sm text-text-secondary">
             {workout.durationMinutes} min · {Math.round(totalVolume)} kg de volume
-          </span>
-          {workout.feeling && <FeelingIcon feeling={workout.feeling} />}
-        </p>
+          </p>
+          <EditableFeeling workoutId={workoutId} initialFeeling={workout.feeling} />
+        </div>
       </div>
 
       <div className="flex flex-col gap-3">
@@ -96,38 +98,37 @@ export default async function WorkoutDetailPage({
         )}
 
         {exerciseGroups.map((group) => (
-          <Card key={group.exerciseId}>
-            <p className="mb-2 font-semibold text-text">
-              {group.exerciseName}
-              {recordsToday.has(`${group.exerciseId}:max_weight`) && (
+          <EditableExerciseGroup
+            key={group.exerciseId}
+            workoutId={workoutId}
+            exerciseId={group.exerciseId}
+            exerciseName={group.exerciseName}
+            initialSets={group.sets.map((s) => ({
+              setNumber: s.setNumber,
+              reps: s.reps,
+              weightKg: Number(s.weightKg),
+            }))}
+            recordBadge={
+              recordsToday.has(`${group.exerciseId}:max_weight`) ? (
                 <span className="ml-2 inline-flex items-center gap-1 text-sm text-accent">
                   <Trophy className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
                   recorde
                 </span>
-              )}
-            </p>
-            <div className="flex flex-col gap-1">
-              {group.sets.map((s) => (
-                <div key={s.setNumber} className="flex justify-between text-sm text-text-secondary">
-                  <span>Série {s.setNumber}</span>
-                  <span>
-                    {s.reps} reps × {s.weightKg} kg
-                  </span>
-                </div>
-              ))}
-            </div>
-          </Card>
+              ) : undefined
+            }
+          />
         ))}
 
-        {cardio.map((c, i) => (
-          <Card key={i}>
-            <p className="font-semibold text-text">{c.exerciseName}</p>
-            <p className="text-sm text-text-secondary">
-              {Math.round(c.durationSeconds / 60)} min
-              {c.distanceMeters && ` · ${(Number(c.distanceMeters) / 1000).toFixed(1)} km`}
-              {c.inclinePercent && ` · ${c.inclinePercent}% inclinação`}
-            </p>
-          </Card>
+        {cardio.map((c) => (
+          <EditableCardioCard
+            key={c.exerciseId}
+            workoutId={workoutId}
+            exerciseId={c.exerciseId}
+            exerciseName={c.exerciseName}
+            initialDurationSeconds={c.durationSeconds}
+            initialDistanceMeters={c.distanceMeters ? Number(c.distanceMeters) : null}
+            initialInclinePercent={c.inclinePercent ? Number(c.inclinePercent) : null}
+          />
         ))}
       </div>
     </div>

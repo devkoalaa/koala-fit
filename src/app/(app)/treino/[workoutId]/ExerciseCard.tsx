@@ -6,7 +6,7 @@ import { Card } from "@/design-system/components/Card";
 import { NumberStepper } from "@/design-system/components/NumberStepper";
 import { Button } from "@/design-system/components/Button";
 import { cn } from "@/lib/cn";
-import { logSet, logCardio } from "./actions";
+import { logSet, logCardio } from "@/lib/actions/workout-sets";
 import type { ExerciseSession } from "./types";
 
 type SetRow = { setNumber: number; reps: number; weightKg: number; done: boolean };
