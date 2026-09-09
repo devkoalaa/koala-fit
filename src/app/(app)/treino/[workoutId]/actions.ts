@@ -10,9 +10,10 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { reconcileStreak } from "@/lib/streak";
 import { detectPersonalRecords, type PersonalRecord } from "@/lib/personal-records";
 
-async function requireOwnedWorkout(workoutId: string) {
+async function requireOwnedWorkout(workoutIdInput: string) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  const workoutId = z.uuid().parse(workoutIdInput);
 
   const [workout] = await db
     .select()
@@ -21,7 +22,7 @@ async function requireOwnedWorkout(workoutId: string) {
     .limit(1);
   if (!workout) throw new Error("Treino não encontrado.");
 
-  return { user, workout };
+  return { user, workout, workoutId };
 }
 
 const setSchema = z.object({
@@ -31,8 +32,8 @@ const setSchema = z.object({
   weightKg: z.number().min(0).max(999),
 });
 
-export async function logSet(workoutId: string, input: z.infer<typeof setSchema>) {
-  await requireOwnedWorkout(workoutId);
+export async function logSet(workoutIdInput: string, input: z.infer<typeof setSchema>) {
+  const { workoutId } = await requireOwnedWorkout(workoutIdInput);
   const parsed = setSchema.parse(input);
 
   await db
@@ -52,12 +53,23 @@ export async function logSet(workoutId: string, input: z.infer<typeof setSchema>
   revalidatePath(`/treino/${workoutId}`);
 }
 
-export async function deleteSet(workoutId: string, exerciseId: string, setNumber: number) {
-  await requireOwnedWorkout(workoutId);
+const deleteSetSchema = z.object({
+  exerciseId: z.uuid(),
+  setNumber: z.number().int().min(1),
+});
+
+export async function deleteSet(workoutIdInput: string, exerciseId: string, setNumber: number) {
+  const { workoutId } = await requireOwnedWorkout(workoutIdInput);
+  const parsed = deleteSetSchema.parse({ exerciseId, setNumber });
+
   await db
     .delete(sets)
     .where(
-      and(eq(sets.workoutId, workoutId), eq(sets.exerciseId, exerciseId), eq(sets.setNumber, setNumber)),
+      and(
+        eq(sets.workoutId, workoutId),
+        eq(sets.exerciseId, parsed.exerciseId),
+        eq(sets.setNumber, parsed.setNumber),
+      ),
     );
   revalidatePath(`/treino/${workoutId}`);
 }
@@ -69,8 +81,8 @@ const cardioSchema = z.object({
   inclinePercent: z.number().min(0).max(50).optional(),
 });
 
-export async function logCardio(workoutId: string, input: z.infer<typeof cardioSchema>) {
-  await requireOwnedWorkout(workoutId);
+export async function logCardio(workoutIdInput: string, input: z.infer<typeof cardioSchema>) {
+  const { workoutId } = await requireOwnedWorkout(workoutIdInput);
   const parsed = cardioSchema.parse(input);
 
   await db
@@ -94,8 +106,14 @@ export type FinishWorkoutResult = {
   records: PersonalRecord[];
 };
 
-export async function finishWorkout(workoutId: string, feeling: number): Promise<FinishWorkoutResult> {
-  const { user, workout } = await requireOwnedWorkout(workoutId);
+const feelingSchema = z.number().int().min(1).max(5);
+
+export async function finishWorkout(
+  workoutIdInput: string,
+  feelingInput: number,
+): Promise<FinishWorkoutResult> {
+  const { user, workout, workoutId } = await requireOwnedWorkout(workoutIdInput);
+  const feeling = feelingSchema.parse(feelingInput);
 
   const durationMinutes = Math.max(1, Math.round((Date.now() - workout.createdAt.getTime()) / 60_000));
 

@@ -1,5 +1,6 @@
 "use server";
 
+import { z } from "zod";
 import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db/client";
@@ -10,11 +11,12 @@ import { toISODate } from "@/lib/date";
 export async function startWorkout(routineId: string) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  const id = z.uuid().parse(routineId);
 
   const [owned] = await db
     .select({ id: routines.id })
     .from(routines)
-    .where(and(eq(routines.id, routineId), eq(routines.userId, user.id)))
+    .where(and(eq(routines.id, id), eq(routines.userId, user.id)))
     .limit(1);
   if (!owned) throw new Error("Rotina não encontrada.");
 
@@ -28,6 +30,6 @@ export async function startWorkout(routineId: string) {
     .limit(1);
   if (existing) redirect(`/treino/${existing.id}`);
 
-  const [workout] = await db.insert(workouts).values({ userId: user.id, routineId, date }).returning();
+  const [workout] = await db.insert(workouts).values({ userId: user.id, routineId: id, date }).returning();
   redirect(`/treino/${workout.id}`);
 }

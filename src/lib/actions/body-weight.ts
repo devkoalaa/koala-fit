@@ -30,9 +30,10 @@ export async function logBodyWeight(weightKg: number) {
   revalidatePath("/evolucao");
 }
 
-export async function deleteBodyWeightLog(id: string) {
+export async function deleteBodyWeightLog(logId: string) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  const id = z.uuid().parse(logId);
 
   await db.delete(bodyWeightLogs).where(and(eq(bodyWeightLogs.id, id), eq(bodyWeightLogs.userId, user.id)));
   revalidatePath("/evolucao");
