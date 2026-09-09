@@ -5,6 +5,7 @@ export type TodayContext = {
   currentStreak: number;
   daysSinceLastWorkout: number | null;
   newRecordsCount?: number;
+  trend?: { exerciseName: string; deltaKg: number; weeks: number } | null;
 };
 
 /**
@@ -28,6 +29,9 @@ export function buildTodayMessage(ctx: TodayContext): string {
   }
   if (ctx.daysSinceLastWorkout >= 3) {
     return `Faz ${ctx.daysSinceLastWorkout} dias desde o último treino. Que tal hoje?`;
+  }
+  if (ctx.trend) {
+    return `${ctx.trend.exerciseName} subiu ${ctx.trend.deltaKg}kg nas últimas ${ctx.trend.weeks} semanas. Bora continuar?`;
   }
   if (ctx.currentStreak > 0) {
     return `Sua ofensiva está em ${ctx.currentStreak}. Vamos manter?`;

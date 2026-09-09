@@ -9,6 +9,7 @@ import { getStreakSummary, getCurrentWeekStatus } from "@/lib/streak";
 import { getNextRoutine } from "@/lib/routines";
 import { detectPersonalRecords } from "@/lib/personal-records";
 import { buildTodayMessage } from "@/lib/insights";
+import { getTopExerciseTrend } from "@/lib/trends";
 import { Card } from "@/design-system/components/Card";
 import { ProgressRing } from "@/design-system/components/ProgressRing";
 import { EmptyState } from "@/design-system/components/EmptyState";
@@ -64,12 +65,15 @@ export default async function HojePage() {
       .orderBy(desc(workouts.date))
       .limit(1);
 
+    const trend = await getTopExerciseTrend(user.id);
+
     message = buildTodayMessage({
       hasTrainedToday: false,
       weeklyDoneCount: week.doneCount,
       weeklyGoal: user.weeklyGoal,
       currentStreak: streak.currentStreak,
       daysSinceLastWorkout: lastBefore ? diffDays(lastBefore.date, today) : null,
+      trend,
     });
   }
 
@@ -117,9 +121,7 @@ export default async function HojePage() {
             </span>
           </div>
           <WeekStrip days={week.days} />
-          {streak.longestStreak > streak.currentStreak && (
-            <p className="text-xs text-text-tertiary">Recorde: {streak.longestStreak}</p>
-          )}
+          <p className="text-xs text-text-tertiary">Recorde: {streak.longestStreak}</p>
         </div>
       </Card>
 
