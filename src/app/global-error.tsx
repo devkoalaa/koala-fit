@@ -29,6 +29,8 @@ export default function GlobalError({
           justifyContent: "center",
           gap: 16,
           padding: 24,
+          paddingTop: "calc(24px + env(safe-area-inset-top, 0px))",
+          paddingBottom: "calc(24px + env(safe-area-inset-bottom, 0px))",
           textAlign: "center",
           background: "#faf9f7",
           color: "#2a2822",

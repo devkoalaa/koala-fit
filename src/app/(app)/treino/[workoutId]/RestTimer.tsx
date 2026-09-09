@@ -58,7 +58,7 @@ export function RestTimer({ onExposeHandle }: { onExposeHandle?: (handle: RestTi
   const progress = 1 - Math.max(0, secondsLeft) / total;
 
   return (
-    <div className="fixed inset-x-0 bottom-20 z-30 flex justify-center px-4">
+    <div className="fixed inset-x-0 bottom-[calc(var(--bottom-nav-space)+0.75rem)] z-30 flex justify-center px-4">
       <div className="flex w-full max-w-sm items-center gap-3 rounded-lg bg-text px-4 py-3 text-bg shadow-lg">
         <span className="flex items-center gap-1.5 text-lg font-bold tabular-nums">
           {secondsLeft > 0 ? (

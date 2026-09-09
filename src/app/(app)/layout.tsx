@@ -9,7 +9,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <ToastProvider>
-      <div className="mx-auto flex min-h-full w-full max-w-md flex-1 flex-col pb-20">
+      <div className="mx-auto flex min-h-full w-full max-w-md flex-1 flex-col pt-[var(--safe-top)] pb-[calc(var(--bottom-nav-space)+1rem)]">
         {children}
       </div>
       <BottomNav />

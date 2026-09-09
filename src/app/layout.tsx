@@ -2,7 +2,13 @@ import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
-import { THEME_COOKIE, isThemePreference, resolvedDataTheme } from "@/lib/theme";
+import {
+  THEME_BACKGROUND,
+  THEME_COOKIE,
+  isThemePreference,
+  resolvedDataTheme,
+  type ThemePreference,
+} from "@/lib/theme";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -26,16 +32,33 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#faf9f7" },
-    { media: "(prefers-color-scheme: dark)", color: "#18160f" },
-  ],
-};
+export async function generateViewport(): Promise<Viewport> {
+  const pref = await readThemePreference();
+
+  return {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    // Draws the app edge-to-edge on notched iPhones; the safe-area insets in
+    // globals.css are what keep content out from under the system bars.
+    viewportFit: "cover",
+    // An explicit preference is known here, so pin the chrome to it. Only
+    // "system" is left to the OS to resolve.
+    themeColor:
+      pref === "system"
+        ? [
+            { media: "(prefers-color-scheme: light)", color: THEME_BACKGROUND.light },
+            { media: "(prefers-color-scheme: dark)", color: THEME_BACKGROUND.dark },
+          ]
+        : THEME_BACKGROUND[pref],
+  };
+}
+
+async function readThemePreference(): Promise<ThemePreference> {
+  const cookieStore = await cookies();
+  const raw = cookieStore.get(THEME_COOKIE)?.value;
+  return isThemePreference(raw) ? raw : "system";
+}
 
 // Resolves "system" to an actual light/dark data-theme attribute before paint,
 // so pages never flash the wrong theme while JS boots.
@@ -52,9 +75,7 @@ const THEME_BOOT_SCRIPT = `
 `;
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const cookieStore = await cookies();
-  const rawPref = cookieStore.get(THEME_COOKIE)?.value;
-  const pref = isThemePreference(rawPref) ? rawPref : "system";
+  const pref = await readThemePreference();
   const dataTheme = resolvedDataTheme(pref);
 
   return (

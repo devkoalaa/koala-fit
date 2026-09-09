@@ -3,8 +3,28 @@
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
+:root {
+  /*
+   * iOS standalone ("Adicionar à Tela de Início") runs the app edge-to-edge
+   * because of viewport-fit=cover, so the status bar and the home indicator
+   * overlap the page unless we inset it ourselves. These read 0px on every
+   * other platform, so the same rules are safe everywhere.
+   */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* Bottom nav row height (min-h-14) plus whatever the home indicator needs. */
+  --bottom-nav-height: 3.5rem;
+  --bottom-nav-space: calc(var(--bottom-nav-height) + var(--safe-bottom));
+}
+
 html {
   color-scheme: light dark;
+  /* Paints the rubber-band overscroll area behind the status bar / home
+     indicator with the theme background instead of the UA default. */
+  background: var(--color-bg);
 }
 
 body {
@@ -12,6 +32,8 @@ body {
   color: var(--color-text);
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
+  /* No page-level bounce in standalone: it exposes the bar behind the app. */
+  overscroll-behavior-y: none;
 }
 
 * {

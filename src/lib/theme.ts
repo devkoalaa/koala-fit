@@ -9,3 +9,13 @@ export function isThemePreference(value: string | undefined): value is ThemePref
 export function resolvedDataTheme(pref: ThemePreference): "light" | "dark" | undefined {
   return pref === "system" ? undefined : pref;
 }
+
+/**
+ * Background of each theme, mirrored from `--color-bg` in tokens.css.
+ * Used as `theme-color`, which is what iOS paints behind the status bar of an
+ * installed web app — it has to follow the *resolved* theme, not just the OS.
+ */
+export const THEME_BACKGROUND: Record<"light" | "dark", string> = {
+  light: "#faf9f7",
+  dark: "#18160f",
+};

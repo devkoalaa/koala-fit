@@ -49,7 +49,7 @@ export function Sheet({ open, onClose, title, children, className }: SheetProps)
         aria-label={title}
         className={cn(
           "relative w-full max-w-md rounded-t-xl bg-bg-elevated shadow-lg",
-          "max-h-[85vh] overflow-y-auto pb-[env(safe-area-inset-bottom)]",
+          "max-h-[calc(85vh-var(--safe-top))] overflow-y-auto pb-[var(--safe-bottom)]",
           "animate-[sheet-slide-up_0.25s_ease-out]",
           className,
         )}

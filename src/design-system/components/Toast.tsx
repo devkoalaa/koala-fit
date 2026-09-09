@@ -41,10 +41,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       {mounted &&
         createPortal(
-          <div
-            className="pointer-events-none fixed inset-x-0 bottom-24 z-[60] flex flex-col items-center gap-2 px-4"
-            style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-          >
+          <div className="pointer-events-none fixed inset-x-0 bottom-[calc(var(--bottom-nav-space)+1rem)] z-[60] flex flex-col items-center gap-2 px-4">
             {toasts.map((toast) => (
               <div
                 key={toast.id}
