@@ -50,6 +50,24 @@ Todos consomem tokens, nenhum valor hardcoded.
   estado vazio.
 - **Skeleton** — placeholder pulsante para loading.
 
+## Ícones
+
+**Sem emoji na UI** — só como ícones do [lucide-react](https://lucide.dev),
+importados individualmente (`import { Trophy } from "lucide-react"`),
+tamanho via `className="h-4 w-4"` (ou `h-5 w-5`/`h-6 w-6`), cor herdada de
+`currentColor` (então só aplicar a classe de cor de texto do token
+desejado). `strokeWidth={2}` é o padrão usado no app; `aria-hidden="true"`
+sempre que o ícone é puramente decorativo (label de texto já presente ao
+lado).
+
+A única exceção deliberada é o mascote coala como ícone do app/favicon
+(`src/app/icon.tsx`, `apple-icon.tsx`, `icons/[size]/route.tsx`) — esses
+continuam usando o emoji 🐨 renderizado via `next/og`, é a marca do produto,
+não um elemento de UI solto.
+
+Mapeamento de humor (1-5, usado em Treino/Histórico) fica centralizado em
+`src/components/FeelingIcon.tsx`: `Frown/Annoyed/Meh/Smile/Laugh`.
+
 ## Convenções mobile-first
 
 - Layout desenhado para 375px primeiro; desktop é a mesma tela centralizada
