@@ -1,5 +1,6 @@
 # Koala Fit
 
+
 App pessoal de treino: registro de treinos, evolução de peso e carga, e uma
 camada de incentivo (ofensiva no estilo Duolingo, recordes pessoais,
 sugestões de progressão). Ver `DESIGN.md` para o design system.
