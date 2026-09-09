@@ -23,7 +23,7 @@ export default async function TreinoPage({
     .where(and(eq(workouts.id, workoutId), eq(workouts.userId, user.id)))
     .limit(1);
   if (!workout) notFound();
-  if (workout.durationMinutes != null) redirect("/hoje");
+  if (workout.durationMinutes != null) redirect(`/historico/${workoutId}`);
 
   const routine = workout.routineId
     ? (await db.select().from(routines).where(eq(routines.id, workout.routineId)).limit(1))[0]
