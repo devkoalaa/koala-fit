@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, useEffect } from "react";
+import { useId, useState } from "react";
 import { cn } from "@/lib/cn";
 
 export type NumberStepperProps = {
@@ -44,10 +44,13 @@ export function NumberStepper({
 }: NumberStepperProps) {
   const inputId = useId();
   const [draft, setDraft] = useState(String(value));
-
-  useEffect(() => {
+  // Resync the editable draft when `value` changes from outside (+/- buttons,
+  // external state) without an effect — see https://react.dev/learn/you-might-not-need-an-effect
+  const [lastValue, setLastValue] = useState(value);
+  if (value !== lastValue) {
+    setLastValue(value);
     setDraft(String(value));
-  }, [value]);
+  }
 
   function commit(next: number) {
     const clamped = clamp(roundToStep(next, step), min, max);
