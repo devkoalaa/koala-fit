@@ -45,6 +45,19 @@ export function EditableExerciseGroup({
     startTransition(() => deleteSet(workoutId, exerciseId, setNumber));
   }
 
+  function addRow() {
+    const last = rows[rows.length - 1];
+    const next: SetItem = {
+      setNumber: rows.length + 1,
+      reps: last?.reps ?? 10,
+      weightKg: last?.weightKg ?? 0,
+    };
+    setRows((prev) => [...prev, next]);
+    startTransition(() =>
+      logSet(workoutId, { exerciseId, setNumber: next.setNumber, reps: next.reps, weightKg: next.weightKg }),
+    );
+  }
+
   if (rows.length === 0) return null;
 
   return (
@@ -87,6 +100,9 @@ export function EditableExerciseGroup({
             </div>
           </div>
         ))}
+        <button type="button" onClick={addRow} className="min-h-11 text-sm font-medium text-primary">
+          + Série extra
+        </button>
       </div>
     </Card>
   );

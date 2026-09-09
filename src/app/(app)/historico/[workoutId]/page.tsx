@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull, or } from "drizzle-orm";
 import { Trophy } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/db/client";
@@ -10,6 +10,7 @@ import { EmptyState } from "@/design-system/components/EmptyState";
 import { EditableExerciseGroup } from "./EditableExerciseGroup";
 import { EditableCardioCard } from "./EditableCardioCard";
 import { EditableFeeling } from "./EditableFeeling";
+import { AddExerciseToWorkoutSheet } from "./AddExerciseToWorkoutSheet";
 
 export default async function WorkoutDetailPage({
   params,
@@ -76,6 +77,17 @@ export default async function WorkoutDetailPage({
 
   const totalVolume = loggedSets.reduce((sum, s) => sum + Number(s.weightKg) * s.reps, 0);
 
+  const catalog = await db
+    .select({ id: exercises.id, name: exercises.name, type: exercises.type })
+    .from(exercises)
+    .where(or(isNull(exercises.userId), eq(exercises.userId, user.id)))
+    .orderBy(exercises.name);
+
+  const existingExerciseIds = [
+    ...exerciseGroups.map((g) => g.exerciseId),
+    ...cardio.map((c) => c.exerciseId),
+  ];
+
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 pt-6">
       <div>
@@ -130,6 +142,12 @@ export default async function WorkoutDetailPage({
             initialInclinePercent={c.inclinePercent ? Number(c.inclinePercent) : null}
           />
         ))}
+
+        <AddExerciseToWorkoutSheet
+          workoutId={workoutId}
+          options={catalog}
+          existingExerciseIds={existingExerciseIds}
+        />
       </div>
     </div>
   );
