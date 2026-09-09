@@ -15,9 +15,17 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
 
-  /* Bottom nav row height (min-h-14) plus whatever the home indicator needs. */
-  --bottom-nav-height: 3.5rem;
-  --bottom-nav-space: calc(var(--bottom-nav-height) + var(--safe-bottom));
+  /*
+   * Bottom nav geometry. The full 34pt inset iOS reports is more room than the
+   * home indicator actually occupies (a ~5pt bar sitting ~8pt off the edge),
+   * and reserving all of it leaves a dead band under the labels. Trim it to
+   * ~20pt: still clear of the swipe-up zone that would swallow taps, but the
+   * bar reads as attached to the bottom edge instead of floating above it.
+   * Off iOS the inset is 0 and the clamp keeps it 0, so nothing changes there.
+   */
+  --bottom-nav-height: 3.25rem;
+  --bottom-nav-inset: max(0px, calc(var(--safe-bottom) - 0.875rem));
+  --bottom-nav-space: calc(var(--bottom-nav-height) + var(--bottom-nav-inset));
 }
 
 html {
