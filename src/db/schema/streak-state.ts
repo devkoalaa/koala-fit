@@ -15,6 +15,9 @@ export const streakState = pgTable(
     streakProtectorsAvailable: integer("streak_protectors_available")
       .notNull()
       .default(0),
+    // Complete (no miss, no protector used) scheduled weeks accumulated since
+    // the last protector was awarded. Hits 2 -> awards a protector, resets to 0.
+    weeksTowardProtector: integer("weeks_toward_protector").notNull().default(0),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -23,6 +26,10 @@ export const streakState = pgTable(
     check(
       "streak_protectors_cap",
       sql`${table.streakProtectorsAvailable} between 0 and 2`,
+    ),
+    check(
+      "weeks_toward_protector_range",
+      sql`${table.weeksTowardProtector} between 0 and 1`,
     ),
   ],
 );

@@ -108,8 +108,10 @@ CREATE TABLE "streak_state" (
 	"longest_streak" integer DEFAULT 0 NOT NULL,
 	"last_valid_date" date,
 	"streak_protectors_available" integer DEFAULT 0 NOT NULL,
+	"weeks_toward_protector" integer DEFAULT 0 NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "streak_protectors_cap" CHECK ("streak_state"."streak_protectors_available" between 0 and 2)
+	CONSTRAINT "streak_protectors_cap" CHECK ("streak_state"."streak_protectors_available" between 0 and 2),
+	CONSTRAINT "weeks_toward_protector_range" CHECK ("streak_state"."weeks_toward_protector" between 0 and 1)
 );
 --> statement-breakpoint
 CREATE TABLE "notes" (
