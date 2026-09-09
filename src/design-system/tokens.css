@@ -1,0 +1,148 @@
+/*
+ * Koala Fit design tokens.
+ * Single source of truth for color, spacing, radius, shadow and type scale.
+ * Declared via Tailwind v4's `@theme` so every token also becomes a utility
+ * class (bg-primary, text-lg, rounded-md, shadow-md, ...) — primitives and
+ * screens should reach for those utilities instead of hardcoding values.
+ *
+ * Spacing intentionally has no separate token block: Tailwind v4's default
+ * spacing scale is already a 4px (0.25rem) multiplier, which is exactly the
+ * scale requested — p-1 = 4px, p-2 = 8px, p-4 = 16px, etc.
+ */
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
+    monospace;
+
+  /* Light palette (default) — warm charcoal/grays, eucalyptus primary, amber accent */
+  --color-bg: #faf9f7;
+  --color-bg-elevated: #ffffff;
+  --color-surface: #f2efe9;
+  --color-surface-hover: #eae5dc;
+  --color-border: #e2ddd2;
+  --color-text: #2a2822;
+  --color-text-secondary: #6b665c;
+  --color-text-tertiary: #9b9689;
+
+  --color-primary: #3f7d63;
+  --color-primary-hover: #326751;
+  --color-primary-fg: #ffffff;
+  --color-primary-soft: #e3efe9;
+
+  --color-accent: #dd9a35;
+  --color-accent-hover: #c6862a;
+  --color-accent-fg: #2a2822;
+  --color-accent-soft: #fbedd6;
+
+  --color-danger: #c9503f;
+  --color-danger-hover: #b1402f;
+  --color-danger-fg: #ffffff;
+  --color-danger-soft: #f7e2de;
+
+  --color-success: #3f7d63;
+  --color-success-soft: #e3efe9;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 999px;
+
+  --shadow-sm: 0 1px 2px 0 rgb(42 40 34 / 0.06);
+  --shadow-md: 0 4px 16px -4px rgb(42 40 34 / 0.14);
+  --shadow-lg: 0 16px 40px -12px rgb(42 40 34 / 0.22);
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.125rem;
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.375rem;
+  --text-lg: 1.0625rem;
+  --text-lg--line-height: 1.5rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+
+/* Explicit dark choice (persisted preference, resolved server- or client-side) */
+[data-theme="dark"] {
+  --color-bg: #18160f;
+  --color-bg-elevated: #211f17;
+  --color-surface: #29261c;
+  --color-surface-hover: #322e22;
+  --color-border: #3a3527;
+  --color-text: #f3f0e8;
+  --color-text-secondary: #b8b2a1;
+  --color-text-tertiary: #837c68;
+
+  --color-primary: #6bb096;
+  --color-primary-hover: #7fc0a7;
+  --color-primary-fg: #12251c;
+  --color-primary-soft: #1f342a;
+
+  --color-accent: #f0b85c;
+  --color-accent-hover: #f5c675;
+  --color-accent-fg: #241a05;
+  --color-accent-soft: #3a2c12;
+
+  --color-danger: #e2695a;
+  --color-danger-hover: #e87f72;
+  --color-danger-fg: #200d07;
+  --color-danger-soft: #3a2019;
+
+  --color-success: #6bb096;
+  --color-success-soft: #1f342a;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.35);
+  --shadow-md: 0 4px 16px -4px rgb(0 0 0 / 0.45);
+  --shadow-lg: 0 16px 40px -12px rgb(0 0 0 / 0.55);
+}
+
+/* No-JS / not-yet-resolved fallback: honor OS preference unless "light" was explicitly chosen */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    --color-bg: #18160f;
+    --color-bg-elevated: #211f17;
+    --color-surface: #29261c;
+    --color-surface-hover: #322e22;
+    --color-border: #3a3527;
+    --color-text: #f3f0e8;
+    --color-text-secondary: #b8b2a1;
+    --color-text-tertiary: #837c68;
+
+    --color-primary: #6bb096;
+    --color-primary-hover: #7fc0a7;
+    --color-primary-fg: #12251c;
+    --color-primary-soft: #1f342a;
+
+    --color-accent: #f0b85c;
+    --color-accent-hover: #f5c675;
+    --color-accent-fg: #241a05;
+    --color-accent-soft: #3a2c12;
+
+    --color-danger: #e2695a;
+    --color-danger-hover: #e87f72;
+    --color-danger-fg: #200d07;
+    --color-danger-soft: #3a2019;
+
+    --color-success: #6bb096;
+    --color-success-soft: #1f342a;
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.35);
+    --shadow-md: 0 4px 16px -4px rgb(0 0 0 / 0.45);
+    --shadow-lg: 0 16px 40px -12px rgb(0 0 0 / 0.55);
+  }
+}
