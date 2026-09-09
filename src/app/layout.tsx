@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import { THEME_COOKIE, isThemePreference, resolvedDataTheme } from "@/lib/theme";
 import "./globals.css";
@@ -65,7 +66,11 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <head>
-        {!dataTheme && <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />}
+        {!dataTheme && (
+          <Script id="theme-boot" strategy="beforeInteractive">
+            {THEME_BOOT_SCRIPT}
+          </Script>
+        )}
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
