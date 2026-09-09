@@ -84,7 +84,10 @@ export function NumberStepper({
           −
         </button>
 
-        <div className="relative flex min-w-0 flex-1 items-center justify-center rounded-md border border-border bg-bg-elevated">
+        {/* The suffix sits in normal flow, not absolutely: side by side with
+            two steppers the field is only ~48px wide, and an overlaid suffix
+            lands right on top of the centred value. */}
+        <div className="flex min-w-0 flex-1 items-center rounded-md border border-border bg-bg-elevated px-2">
           <input
             id={inputId}
             inputMode="decimal"
@@ -97,10 +100,13 @@ export function NumberStepper({
                 (e.target as HTMLInputElement).blur();
               }
             }}
-            className="w-full bg-transparent text-center text-xl font-semibold text-text tabular-nums outline-none"
+            className={cn(
+              "min-w-0 flex-1 bg-transparent text-xl font-semibold text-text tabular-nums outline-none",
+              suffix ? "text-right" : "text-center",
+            )}
           />
           {suffix && (
-            <span className="pointer-events-none absolute right-3 text-sm text-text-tertiary">
+            <span className="pointer-events-none ml-1 shrink-0 text-sm text-text-tertiary">
               {suffix}
             </span>
           )}
