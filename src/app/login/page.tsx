@@ -9,7 +9,7 @@ export default async function LoginPage() {
   if (user) redirect("/hoje");
 
   return (
-    <main className="flex min-h-full flex-1 flex-col items-center justify-center bg-bg px-5 pt-[calc(2.5rem+var(--safe-top))] pb-[calc(2.5rem+var(--safe-bottom))]">
+    <main className="flex min-h-lvh flex-1 flex-col items-center justify-center bg-bg px-5 pt-[calc(2.5rem+var(--safe-top))] pb-[calc(2.5rem+var(--safe-bottom))]">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center gap-2 text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft text-primary">

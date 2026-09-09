@@ -16,7 +16,7 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <div className="flex min-h-full flex-1 flex-col items-center justify-center gap-4 px-6 pt-[var(--safe-top)] pb-[var(--safe-bottom)] text-center">
+    <div className="flex min-h-lvh flex-1 flex-col items-center justify-center gap-4 px-6 pt-[var(--safe-top)] pb-[var(--safe-bottom)] text-center">
       <TriangleAlert className="h-10 w-10 text-danger" strokeWidth={1.5} aria-hidden="true" />
       <div>
         <h1 className="text-xl font-bold text-text">Algo deu errado</h1>

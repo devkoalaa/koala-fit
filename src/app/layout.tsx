@@ -83,7 +83,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       lang="pt-BR"
       data-theme={dataTheme}
       data-theme-pref={pref}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} min-h-lvh antialiased`}
       suppressHydrationWarning
     >
       <head>
@@ -93,7 +93,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           </Script>
         )}
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-lvh flex flex-col">{children}</body>
     </html>
   );
 }

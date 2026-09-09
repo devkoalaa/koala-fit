@@ -82,10 +82,43 @@ export function SafeAreaProbe() {
           label: "innerHeight / screen.height",
           value: `${innerHeight} / ${screen.height}`,
         },
+        {
+          label: "base da <nav> / innerHeight",
+          value: nav
+            ? `${Math.round(nav.getBoundingClientRect().bottom)} / ${innerHeight}`
+            : "(sem nav)",
+        },
+        {
+          label: "sobra abaixo da <nav>",
+          value: nav
+            ? `${Math.round(screen.height - nav.getBoundingClientRect().bottom)}px`
+            : "(sem nav)",
+        },
+        {
+          label: "svh / lvh / dvh",
+          value: `${measureUnit("svh")} / ${measureUnit("lvh")} / ${measureUnit("dvh")}`,
+        },
+        {
+          label: "página rola?",
+          value: String(
+            document.documentElement.scrollHeight >
+              document.documentElement.clientHeight,
+          ),
+        },
         { label: "devicePixelRatio", value: String(devicePixelRatio) },
       ]);
 
       probe.remove();
+    }
+
+    /** Resolves one viewport unit to px, so we can see how iOS sizes each. */
+    function measureUnit(unit: "svh" | "lvh" | "dvh") {
+      const el = document.createElement("div");
+      el.style.cssText = `position:fixed;top:0;left:0;visibility:hidden;height:100${unit}`;
+      document.body.appendChild(el);
+      const height = Math.round(el.getBoundingClientRect().height);
+      el.remove();
+      return height;
     }
   }, []);
 
