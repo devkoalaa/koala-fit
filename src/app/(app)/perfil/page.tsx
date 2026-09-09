@@ -39,6 +39,18 @@ export default async function PerfilPage() {
         </span>
       </Link>
 
+      {/* Temporário: o app instalado não tem barra de endereço, então /debug
+          precisa de um ponto de entrada aqui dentro. Remover junto com a rota. */}
+      <Link
+        href="/debug"
+        className="flex min-h-12 items-center justify-between rounded-lg border border-border bg-bg-elevated px-4 text-text"
+      >
+        <span className="font-medium">Diagnóstico</span>
+        <span className="text-text-tertiary" aria-hidden="true">
+          ›
+        </span>
+      </Link>
+
       <LogoutButton />
     </div>
   );
