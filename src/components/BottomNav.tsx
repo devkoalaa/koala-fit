@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Home, Calendar, TrendingUp, ClipboardList, CircleUserRound } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const TABS = [
-  { href: "/hoje", label: "Hoje", icon: "🏠" },
-  { href: "/historico", label: "Histórico", icon: "📅" },
-  { href: "/evolucao", label: "Evolução", icon: "📈" },
-  { href: "/rotinas", label: "Rotinas", icon: "📋" },
-  { href: "/perfil", label: "Perfil", icon: "🐨" },
+  { href: "/hoje", label: "Hoje", Icon: Home },
+  { href: "/historico", label: "Histórico", Icon: Calendar },
+  { href: "/evolucao", label: "Evolução", Icon: TrendingUp },
+  { href: "/rotinas", label: "Rotinas", Icon: ClipboardList },
+  { href: "/perfil", label: "Perfil", Icon: CircleUserRound },
 ] as const;
 
 export function BottomNav() {
@@ -33,9 +34,7 @@ export function BottomNav() {
               )}
               aria-current={active ? "page" : undefined}
             >
-              <span className="text-lg leading-none" aria-hidden="true">
-                {tab.icon}
-              </span>
+              <tab.Icon className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
               {tab.label}
             </Link>
           );

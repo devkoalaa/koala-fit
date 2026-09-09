@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { ArrowUp, ArrowDown, Trash2 } from "lucide-react";
 import { Card } from "@/design-system/components/Card";
 import { NumberStepper } from "@/design-system/components/NumberStepper";
 import {
@@ -54,7 +55,7 @@ export function RoutineExerciseRow({
             className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary disabled:opacity-30"
             aria-label="Mover para cima"
           >
-            ↑
+            <ArrowUp className="h-4 w-4" strokeWidth={2} />
           </button>
           <button
             type="button"
@@ -63,7 +64,7 @@ export function RoutineExerciseRow({
             className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary disabled:opacity-30"
             aria-label="Mover para baixo"
           >
-            ↓
+            <ArrowDown className="h-4 w-4" strokeWidth={2} />
           </button>
           <button
             type="button"
@@ -72,7 +73,7 @@ export function RoutineExerciseRow({
             className="flex h-8 w-8 items-center justify-center rounded-md text-danger disabled:opacity-30"
             aria-label="Remover exercício"
           >
-            ✕
+            <Trash2 className="h-4 w-4" strokeWidth={2} />
           </button>
         </div>
       </div>

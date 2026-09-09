@@ -1,13 +1,13 @@
 import { notFound, redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
+import { Trophy } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/db/client";
 import { workouts, routines, sets, cardioSessions, exercises } from "@/db/schema";
 import { formatDateBR } from "@/lib/date";
 import { getAllTimePersonalRecords } from "@/lib/personal-records";
 import { Card } from "@/design-system/components/Card";
-
-const FEELING_EMOJI: Record<number, string> = { 1: "😩", 2: "🙁", 3: "😐", 4: "🙂", 5: "😄" };
+import { FeelingIcon } from "@/components/FeelingIcon";
 
 export default async function WorkoutDetailPage({
   params,
@@ -78,9 +78,11 @@ export default async function WorkoutDetailPage({
       <div>
         <p className="text-sm text-text-secondary">{formatDateBR(workout.date)}</p>
         <h1 className="text-2xl font-bold text-text">{routine?.name ?? "Treino livre"}</h1>
-        <p className="text-sm text-text-secondary">
-          {workout.durationMinutes} min · {Math.round(totalVolume)} kg de volume
-          {workout.feeling && ` · ${FEELING_EMOJI[workout.feeling]}`}
+        <p className="flex items-center gap-1.5 text-sm text-text-secondary">
+          <span>
+            {workout.durationMinutes} min · {Math.round(totalVolume)} kg de volume
+          </span>
+          {workout.feeling && <FeelingIcon feeling={workout.feeling} />}
         </p>
       </div>
 
@@ -90,7 +92,10 @@ export default async function WorkoutDetailPage({
             <p className="mb-2 font-semibold text-text">
               {group.exerciseName}
               {recordsToday.has(`${group.exerciseId}:max_weight`) && (
-                <span className="ml-2 text-sm text-accent">🏆 recorde</span>
+                <span className="ml-2 inline-flex items-center gap-1 text-sm text-accent">
+                  <Trophy className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+                  recorde
+                </span>
               )}
             </p>
             <div className="flex flex-col gap-1">

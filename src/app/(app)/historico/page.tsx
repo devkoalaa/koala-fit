@@ -9,8 +9,7 @@ import { isPeriod, periodStartDate, type Period } from "@/lib/period";
 import { Card } from "@/design-system/components/Card";
 import { EmptyState } from "@/design-system/components/EmptyState";
 import { PeriodFilter } from "@/components/PeriodFilter";
-
-const FEELING_EMOJI: Record<number, string> = { 1: "😩", 2: "🙁", 3: "😐", 4: "🙂", 5: "😄" };
+import { FeelingIcon } from "@/components/FeelingIcon";
 
 export default async function HistoricoPage({
   searchParams,
@@ -63,7 +62,11 @@ export default async function HistoricoPage({
                     {formatDateBR(w.date)} · {w.durationMinutes} min
                   </p>
                 </div>
-                <span className="text-xl">{w.feeling ? FEELING_EMOJI[w.feeling] : "—"}</span>
+                {w.feeling ? (
+                  <FeelingIcon feeling={w.feeling} className="text-text-secondary" />
+                ) : (
+                  <span className="text-text-tertiary">—</span>
+                )}
               </Card>
             </Link>
           ))}

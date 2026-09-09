@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { PartyPopper, Trophy, Frown, Annoyed, Meh, Smile, Laugh, type LucideIcon } from "lucide-react";
 import { Card } from "@/design-system/components/Card";
 import { Button } from "@/design-system/components/Button";
 import { Sheet } from "@/design-system/components/Sheet";
@@ -11,13 +12,13 @@ import { RestTimer, type RestTimerHandle } from "./RestTimer";
 import { finishWorkout, type FinishWorkoutResult } from "./actions";
 import type { ExerciseSession } from "./types";
 
-const FEELINGS = [
-  { value: 1, emoji: "😩" },
-  { value: 2, emoji: "🙁" },
-  { value: 3, emoji: "😐" },
-  { value: 4, emoji: "🙂" },
-  { value: 5, emoji: "😄" },
-] as const;
+const FEELINGS: { value: number; Icon: LucideIcon }[] = [
+  { value: 1, Icon: Frown },
+  { value: 2, Icon: Annoyed },
+  { value: 3, Icon: Meh },
+  { value: 4, Icon: Smile },
+  { value: 5, Icon: Laugh },
+];
 
 export function WorkoutSession({
   workoutId,
@@ -82,12 +83,14 @@ export function WorkoutSession({
                   type="button"
                   onClick={() => setFeeling(f.value)}
                   className={cn(
-                    "flex h-14 w-14 items-center justify-center rounded-full text-2xl transition-colors",
-                    feeling === f.value ? "bg-primary-soft ring-2 ring-primary" : "bg-surface",
+                    "flex h-14 w-14 items-center justify-center rounded-full transition-colors",
+                    feeling === f.value
+                      ? "bg-primary-soft text-primary ring-2 ring-primary"
+                      : "bg-surface text-text-secondary",
                   )}
                   aria-label={`Nota ${f.value}`}
                 >
-                  {f.emoji}
+                  <f.Icon className="h-6 w-6" strokeWidth={2} aria-hidden="true" />
                 </button>
               ))}
             </div>
@@ -97,7 +100,7 @@ export function WorkoutSession({
           </div>
         ) : (
           <div className="flex flex-col items-center gap-4 text-center">
-            <span className="text-4xl">🎉</span>
+            <PartyPopper className="h-10 w-10 text-accent" strokeWidth={1.5} aria-hidden="true" />
             <div>
               <p className="text-xl font-bold text-text">Treino concluído!</p>
               <p className="text-text-secondary">
@@ -107,7 +110,10 @@ export function WorkoutSession({
 
             {result.records.length > 0 && (
               <Card className="w-full bg-accent-soft text-left">
-                <p className="mb-2 font-semibold text-accent-fg">Recordes pessoais! 🏆</p>
+                <p className="mb-2 flex items-center gap-1.5 font-semibold text-accent-fg">
+                  <Trophy className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+                  Recordes pessoais!
+                </p>
                 <ul className="flex flex-col gap-1 text-sm text-accent-fg">
                   {result.records.map((r, i) => (
                     <li key={i}>

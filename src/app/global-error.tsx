@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { TriangleAlert } from "lucide-react";
 
 // Catches errors thrown by the root layout itself (e.g. theme cookie
 // resolution) — error.tsx can't, since it renders *inside* that layout.
@@ -34,7 +35,7 @@ export default function GlobalError({
           fontFamily: "system-ui, sans-serif",
         }}
       >
-        <span style={{ fontSize: 40 }}>🐨💥</span>
+        <TriangleAlert size={40} color="#c9503f" strokeWidth={1.5} aria-hidden="true" />
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Algo deu errado</h1>
           <p style={{ fontSize: 14, color: "#6b665c" }}>Tente recarregar a página.</p>

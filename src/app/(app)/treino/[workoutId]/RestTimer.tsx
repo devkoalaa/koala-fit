@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Flame } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const DEFAULT_SECONDS = 90;
@@ -59,8 +60,14 @@ export function RestTimer({ onExposeHandle }: { onExposeHandle?: (handle: RestTi
   return (
     <div className="fixed inset-x-0 bottom-20 z-30 flex justify-center px-4">
       <div className="flex w-full max-w-sm items-center gap-3 rounded-lg bg-text px-4 py-3 text-bg shadow-lg">
-        <span className="text-lg font-bold tabular-nums">
-          {secondsLeft > 0 ? `${secondsLeft}s` : "Vai! 💪"}
+        <span className="flex items-center gap-1.5 text-lg font-bold tabular-nums">
+          {secondsLeft > 0 ? (
+            `${secondsLeft}s`
+          ) : (
+            <>
+              Vai! <Flame className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
+            </>
+          )}
         </span>
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-bg/25">
           <div

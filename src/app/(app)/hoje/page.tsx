@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { PartyPopper } from "lucide-react";
 import { and, desc, eq, lt, sql } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/db/client";
@@ -128,7 +129,10 @@ export default async function HojePage() {
       {todaysWorkout ? (
         todaySummary ? (
           <Card className="flex flex-col gap-1">
-            <p className="font-semibold text-text">Treino de hoje concluído 🎉</p>
+            <p className="flex items-center gap-1.5 font-semibold text-text">
+              Treino de hoje concluído
+              <PartyPopper className="h-5 w-5 text-accent" strokeWidth={2} aria-hidden="true" />
+            </p>
             <p className="text-sm text-text-secondary">
               {todaySummary.durationMinutes} min · {Math.round(todaySummary.volumeKg)} kg de volume total
             </p>

@@ -1,3 +1,4 @@
+import { Check, Star, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { WEEKDAY_LABEL_PT } from "@/lib/date";
 import type { WeekDayInfo } from "@/lib/streak";
@@ -23,9 +24,9 @@ export function WeekStrip({ days }: { days: WeekDayInfo[] }) {
             )}
             title={day.status}
           >
-            {day.status === "done" && "✓"}
-            {day.status === "bonus" && "★"}
-            {day.status === "missed" && "×"}
+            {day.status === "done" && <Check className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />}
+            {day.status === "bonus" && <Star className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />}
+            {day.status === "missed" && <X className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />}
           </div>
         </div>
       ))}

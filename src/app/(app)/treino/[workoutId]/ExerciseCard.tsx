@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Lightbulb, Check, ChevronUp, ChevronDown } from "lucide-react";
 import { Card } from "@/design-system/components/Card";
 import { NumberStepper } from "@/design-system/components/NumberStepper";
 import { Button } from "@/design-system/components/Button";
@@ -121,17 +122,22 @@ export function ExerciseCard({
               {doneCount}/{item.targetSets}
             </span>
           ) : (
-            cardioDone && <span className="text-primary">✓</span>
+            cardioDone && <Check className="h-4 w-4 text-primary" strokeWidth={2} aria-hidden="true" />
           )}
-          <span className="text-text-tertiary">{expanded ? "▲" : "▼"}</span>
+          {expanded ? (
+            <ChevronUp className="h-4 w-4 text-text-tertiary" strokeWidth={2} aria-hidden="true" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-text-tertiary" strokeWidth={2} aria-hidden="true" />
+          )}
         </div>
       </button>
 
       {expanded && (
         <div className="flex flex-col gap-3 border-t border-border px-4 py-4">
           {item.suggestProgression && (
-            <div className="rounded-md bg-accent-soft px-3 py-2 text-sm text-accent-fg">
-              💡 Você bateu o topo da faixa nas últimas 2 sessões — que tal subir a carga hoje?
+            <div className="flex items-start gap-2 rounded-md bg-accent-soft px-3 py-2 text-sm text-accent-fg">
+              <Lightbulb className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />
+              Você bateu o topo da faixa nas últimas 2 sessões — que tal subir a carga hoje?
             </div>
           )}
           {item.exerciseType === "weight" ? (
@@ -172,7 +178,13 @@ export function ExerciseCard({
                       onClick={() => completeSet(row)}
                       disabled={pending}
                     >
-                      {row.done ? "Série concluída ✓" : "Concluir série"}
+                      {row.done ? (
+                        <>
+                          Série concluída <Check className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+                        </>
+                      ) : (
+                        "Concluir série"
+                      )}
                     </Button>
                   </div>
                 );
@@ -211,7 +223,13 @@ export function ExerciseCard({
                 onChange={setCardioIncline}
               />
               <Button variant={cardioDone ? "secondary" : "primary"} onClick={completeCardio} disabled={pending}>
-                {cardioDone ? "Registrado ✓" : "Concluir"}
+                {cardioDone ? (
+                  <>
+                    Registrado <Check className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+                  </>
+                ) : (
+                  "Concluir"
+                )}
               </Button>
             </div>
           )}
