@@ -13,4 +13,5 @@ export type ExerciseSession = {
   loggedSets: LoggedSet[];
   lastPerformance: LoggedSet[];
   loggedCardio: { durationSeconds: number; distanceMeters: number | null; inclinePercent: number | null } | null;
+  suggestProgression: boolean;
 };

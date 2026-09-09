@@ -129,6 +129,11 @@ export function ExerciseCard({
 
       {expanded && (
         <div className="flex flex-col gap-3 border-t border-border px-4 py-4">
+          {item.suggestProgression && (
+            <div className="rounded-md bg-accent-soft px-3 py-2 text-sm text-accent-fg">
+              💡 Você bateu o topo da faixa nas últimas 2 sessões — que tal subir a carga hoje?
+            </div>
+          )}
           {item.exerciseType === "weight" ? (
             <>
               {rows.map((row) => {

@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/db/client";
 import { workouts, routines, routineExercises, exercises, sets, cardioSessions } from "@/db/schema";
 import { getLastPerformance } from "@/lib/workout-data";
+import { shouldSuggestProgression } from "@/lib/progression";
 import { WorkoutSession } from "./WorkoutSession";
 import type { ExerciseSession } from "./types";
 
@@ -56,6 +57,16 @@ export default async function TreinoPage({
       const lastPerformance =
         item.exerciseType === "weight" ? await getLastPerformance(user.id, item.exerciseId, workoutId) : [];
       const cardio = loggedCardio.find((c) => c.exerciseId === item.exerciseId);
+      const suggestProgression =
+        item.exerciseType === "weight"
+          ? await shouldSuggestProgression(
+              user.id,
+              item.exerciseId,
+              item.targetRepsMax,
+              item.targetSets,
+              workoutId,
+            )
+          : false;
 
       return {
         routineExerciseId: item.id,
@@ -78,6 +89,7 @@ export default async function TreinoPage({
               inclinePercent: cardio.inclinePercent ? Number(cardio.inclinePercent) : null,
             }
           : null,
+        suggestProgression,
       };
     }),
   );
