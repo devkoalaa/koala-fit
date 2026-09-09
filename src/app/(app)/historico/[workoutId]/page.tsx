@@ -7,6 +7,7 @@ import { workouts, routines, sets, cardioSessions, exercises } from "@/db/schema
 import { formatDateBR } from "@/lib/date";
 import { getAllTimePersonalRecords } from "@/lib/personal-records";
 import { Card } from "@/design-system/components/Card";
+import { EmptyState } from "@/design-system/components/EmptyState";
 import { FeelingIcon } from "@/components/FeelingIcon";
 
 export default async function WorkoutDetailPage({
@@ -87,6 +88,13 @@ export default async function WorkoutDetailPage({
       </div>
 
       <div className="flex flex-col gap-3">
+        {exerciseGroups.length === 0 && cardio.length === 0 && (
+          <EmptyState
+            title="Nenhuma série registrada"
+            description="Esse treino foi concluído sem exercícios registrados."
+          />
+        )}
+
         {exerciseGroups.map((group) => (
           <Card key={group.exerciseId}>
             <p className="mb-2 font-semibold text-text">
