@@ -46,7 +46,7 @@ export function WorkoutSession({
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4 px-4 pt-6">
+    <div className="flex flex-1 flex-col gap-4 px-4 pt-6 pb-4">
       <div>
         <p className="text-sm text-text-secondary">Treino em andamento</p>
         <h1 className="text-2xl font-bold text-text">{routineName}</h1>

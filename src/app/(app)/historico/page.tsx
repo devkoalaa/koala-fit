@@ -44,7 +44,7 @@ export default async function HistoricoPage({
     .orderBy(desc(workouts.date));
 
   return (
-    <div className="flex flex-1 flex-col gap-4 px-4 pt-6">
+    <div className="flex flex-1 flex-col gap-4 px-4 pt-6 pb-4">
       <h1 className="text-2xl font-bold text-text">Histórico</h1>
 
       <PeriodFilter current={period} />

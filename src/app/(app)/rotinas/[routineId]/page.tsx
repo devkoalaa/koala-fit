@@ -47,7 +47,7 @@ export default async function RoutineDetailPage({
     .orderBy(exercises.name);
 
   return (
-    <div className="flex flex-1 flex-col gap-4 px-4 pt-6">
+    <div className="flex flex-1 flex-col gap-4 px-4 pt-6 pb-4">
       <RoutineHeader routineId={routine.id} initialName={routine.name} />
 
       {items.length === 0 ? (

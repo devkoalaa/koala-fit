@@ -17,7 +17,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg-elevated pb-[var(--bottom-nav-inset)] pl-[var(--safe-left)] pr-[var(--safe-right)]">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg-elevated pb-[var(--safe-bottom)] pl-[var(--safe-left)] pr-[var(--safe-right)]">
       <div className="mx-auto flex max-w-md items-stretch justify-around">
         {TABS.map((tab) => {
           const active = pathname === tab.href || pathname.startsWith(`${tab.href}/`);
@@ -26,7 +26,7 @@ export function BottomNav() {
               key={tab.href}
               href={tab.href}
               className={cn(
-                "flex min-h-13 flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium",
+                "flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium",
                 active ? "text-primary" : "text-text-tertiary",
               )}
               aria-current={active ? "page" : undefined}

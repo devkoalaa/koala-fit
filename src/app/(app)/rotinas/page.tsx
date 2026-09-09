@@ -25,7 +25,7 @@ export default async function RotinasPage() {
     .orderBy(routines.createdAt);
 
   return (
-    <div className="flex flex-1 flex-col gap-4 px-4 pt-6">
+    <div className="flex flex-1 flex-col gap-4 px-4 pt-6 pb-4">
       <h1 className="text-2xl font-bold text-text">Rotinas</h1>
 
       {items.length === 0 ? (
