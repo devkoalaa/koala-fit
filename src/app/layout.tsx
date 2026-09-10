@@ -102,6 +102,11 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             {THEME_BOOT_SCRIPT}
           </Script>
         )}
+        {/* Next's `appleWebApp.capable` metadata only emits the newer generic
+            "mobile-web-app-capable" tag, not this one — but the splash-screen
+            feature specifically still keys off the legacy Apple-prefixed tag
+            on at least some iOS versions. Added explicitly. */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
         {/* iOS doesn't generate a splash screen from the manifest like Android
             does — these give it one per device size instead of a blank flash
             on launch. Hardcoded /koala-fit prefix for the same reason as the
