@@ -9,6 +9,7 @@ import {
   resolvedDataTheme,
   type ThemePreference,
 } from "@/lib/theme";
+import { APPLE_SPLASH_DEVICES } from "@/lib/apple-splash-devices";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -101,6 +102,18 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             {THEME_BOOT_SCRIPT}
           </Script>
         )}
+        {/* iOS doesn't generate a splash screen from the manifest like Android
+            does — these give it one per device size instead of a blank flash
+            on launch. Hardcoded /koala-fit prefix for the same reason as the
+            icons above: basePath isn't auto-applied here. */}
+        {APPLE_SPLASH_DEVICES.map((d) => (
+          <link
+            key={`${d.widthCss}x${d.heightCss}@${d.dpr}`}
+            rel="apple-touch-startup-image"
+            href={`/koala-fit/apple-splash/${d.widthCss * d.dpr}x${d.heightCss * d.dpr}`}
+            media={`(device-width: ${d.widthCss}px) and (device-height: ${d.heightCss}px) and (-webkit-device-pixel-ratio: ${d.dpr}) and (orientation: portrait)`}
+          />
+        ))}
       </head>
       <body className="min-h-lvh flex flex-col">{children}</body>
     </html>
