@@ -100,10 +100,7 @@ export function NumberStepper({
                 (e.target as HTMLInputElement).blur();
               }
             }}
-            className={cn(
-              "min-w-0 flex-1 bg-transparent text-xl font-semibold text-text tabular-nums outline-none",
-              suffix ? "text-right" : "text-center",
-            )}
+            className="min-w-0 flex-1 bg-transparent text-center text-xl font-semibold text-text tabular-nums outline-none"
           />
           {suffix && (
             <span className="pointer-events-none ml-1 shrink-0 text-sm text-text-tertiary">
