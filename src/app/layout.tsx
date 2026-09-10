@@ -9,7 +9,6 @@ import {
   resolvedDataTheme,
   type ThemePreference,
 } from "@/lib/theme";
-import { AppSplash } from "@/components/AppSplash";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -106,10 +105,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             correct/harmless for standalone-mode support in general. */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
       </head>
-      <body className="min-h-lvh flex flex-col">
-        <AppSplash />
-        {children}
-      </body>
+      <body className="min-h-lvh flex flex-col">{children}</body>
     </html>
   );
 }
