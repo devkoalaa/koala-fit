@@ -25,19 +25,23 @@ export function EditableExerciseGroup({
   const [, startTransition] = useTransition();
 
   function updateRow(setNumber: number, patch: Partial<SetItem>) {
-    setRows((prev) => {
-      const next = prev.map((r) => (r.setNumber === setNumber ? { ...r, ...patch } : r));
-      const updated = next.find((r) => r.setNumber === setNumber)!;
-      startTransition(() =>
-        logSet(workoutId, {
-          exerciseId,
-          setNumber,
-          reps: updated.reps,
-          weightKg: updated.weightKg,
-        }),
-      );
-      return next;
-    });
+    // Compute the next row and fire the side effect OUTSIDE the setState
+    // updater — an updater must be pure, since React can (and, mixed with
+    // startTransition here, reliably did) invoke it more than once, firing
+    // the server action repeatedly and cascading into runaway re-renders.
+    const current = rows.find((r) => r.setNumber === setNumber);
+    if (!current) return;
+    const updated = { ...current, ...patch };
+
+    setRows((prev) => prev.map((r) => (r.setNumber === setNumber ? updated : r)));
+    startTransition(() =>
+      logSet(workoutId, {
+        exerciseId,
+        setNumber,
+        reps: updated.reps,
+        weightKg: updated.weightKg,
+      }),
+    );
   }
 
   function removeRow(setNumber: number) {
