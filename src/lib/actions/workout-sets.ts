@@ -116,3 +116,16 @@ export async function updateWorkoutFeeling(workoutIdInput: string, feelingInput:
   await db.update(workouts).set({ feeling }).where(eq(workouts.id, workoutId));
   revalidateWorkoutPaths(workoutId);
 }
+
+// Sets and cardio_sessions cascade on workouts.id, so this is a single
+// query. Works for both an in-progress workout (started by mistake) and a
+// finished one — the caller decides where to navigate afterward.
+export async function deleteWorkout(workoutIdInput: string) {
+  const { workoutId } = await requireOwnedWorkout(workoutIdInput);
+
+  await db.delete(workouts).where(eq(workouts.id, workoutId));
+
+  revalidatePath("/hoje");
+  revalidatePath("/historico");
+  revalidatePath("/evolucao");
+}

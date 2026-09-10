@@ -11,6 +11,7 @@ import { EditableExerciseGroup } from "./EditableExerciseGroup";
 import { EditableCardioCard } from "./EditableCardioCard";
 import { EditableFeeling } from "./EditableFeeling";
 import { AddExerciseToWorkoutSheet } from "./AddExerciseToWorkoutSheet";
+import { DeleteWorkoutButton } from "./DeleteWorkoutButton";
 
 export default async function WorkoutDetailPage({
   params,
@@ -90,15 +91,18 @@ export default async function WorkoutDetailPage({
 
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 pt-6 pb-4">
-      <div>
-        <p className="text-sm text-text-secondary">{formatDateBR(workout.date)}</p>
-        <h1 className="text-2xl font-bold text-text">{routine?.name ?? "Treino livre"}</h1>
-        <div className="mt-1 flex items-center justify-between">
-          <p className="text-sm text-text-secondary">
-            {workout.durationMinutes} min · {Math.round(totalVolume)} kg de volume
-          </p>
-          <EditableFeeling workoutId={workoutId} initialFeeling={workout.feeling} />
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm text-text-secondary">{formatDateBR(workout.date)}</p>
+          <h1 className="text-2xl font-bold text-text">{routine?.name ?? "Treino livre"}</h1>
+          <div className="mt-1 flex items-center justify-between">
+            <p className="text-sm text-text-secondary">
+              {workout.durationMinutes} min · {Math.round(totalVolume)} kg de volume
+            </p>
+            <EditableFeeling workoutId={workoutId} initialFeeling={workout.feeling} />
+          </div>
         </div>
+        <DeleteWorkoutButton workoutId={workoutId} />
       </div>
 
       <div className="flex flex-col gap-3">

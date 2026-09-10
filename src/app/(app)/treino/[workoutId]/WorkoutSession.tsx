@@ -7,6 +7,7 @@ import { Card } from "@/design-system/components/Card";
 import { Button } from "@/design-system/components/Button";
 import { Sheet } from "@/design-system/components/Sheet";
 import { cn } from "@/lib/cn";
+import { deleteWorkout } from "@/lib/actions/workout-sets";
 import { ExerciseCard } from "./ExerciseCard";
 import { RestTimer, type RestTimerHandle } from "./RestTimer";
 import { finishWorkout, type FinishWorkoutResult } from "./actions";
@@ -34,6 +35,7 @@ export function WorkoutSession({
   const [feeling, setFeeling] = useState<number | null>(null);
   const [result, setResult] = useState<FinishWorkoutResult | null>(null);
   const [pending, startTransition] = useTransition();
+  const [deleting, startDeleteTransition] = useTransition();
   const timerRef = useRef<RestTimerHandle | null>(null);
   const router = useRouter();
 
@@ -45,11 +47,29 @@ export function WorkoutSession({
     });
   }
 
+  function handleDelete() {
+    if (!window.confirm("Excluir este treino? Essa ação não pode ser desfeita.")) return;
+    startDeleteTransition(async () => {
+      await deleteWorkout(workoutId);
+      router.push("/hoje");
+    });
+  }
+
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 pt-6 pb-4">
-      <div>
-        <p className="text-sm text-text-secondary">Treino em andamento</p>
-        <h1 className="text-2xl font-bold text-text">{routineName}</h1>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm text-text-secondary">Treino em andamento</p>
+          <h1 className="text-2xl font-bold text-text">{routineName}</h1>
+        </div>
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={deleting}
+          className="mt-1 shrink-0 text-sm font-medium text-danger disabled:opacity-50"
+        >
+          {deleting ? "Excluindo…" : "Excluir treino"}
+        </button>
       </div>
 
       <div className="flex flex-col gap-3">
