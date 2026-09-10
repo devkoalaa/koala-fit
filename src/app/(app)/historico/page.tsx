@@ -54,7 +54,11 @@ export default async function HistoricoPage({
       ) : (
         <div className="flex flex-col gap-3">
           {items.map((w) => (
-            <Link key={w.id} href={`/historico/${w.id}`}>
+            <Link
+              key={w.id}
+              href={`/historico/${w.id}`}
+              className="block transition-transform duration-150 active:scale-[0.98]"
+            >
               <Card className="flex items-center justify-between">
                 <div>
                   <p className="font-semibold text-text">{w.routineName ?? "Treino livre"}</p>

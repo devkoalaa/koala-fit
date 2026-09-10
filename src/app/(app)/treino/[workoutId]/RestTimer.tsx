@@ -59,7 +59,7 @@ export function RestTimer({ onExposeHandle }: { onExposeHandle?: (handle: RestTi
 
   return (
     <div className="fixed inset-x-0 bottom-[calc(var(--bottom-nav-space)+0.75rem)] z-30 flex justify-center px-4">
-      <div className="flex w-full max-w-sm items-center gap-3 rounded-lg bg-text px-4 py-3 text-bg shadow-lg">
+      <div className="flex w-full max-w-sm items-center gap-3 rounded-lg bg-text px-4 py-3 text-bg shadow-lg animate-[toast-slide-in_0.25s_ease-out]">
         <span className="flex items-center gap-1.5 text-lg font-bold tabular-nums">
           {secondsLeft > 0 ? (
             `${secondsLeft}s`
@@ -71,7 +71,7 @@ export function RestTimer({ onExposeHandle }: { onExposeHandle?: (handle: RestTi
         </span>
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-bg/25">
           <div
-            className={cn("h-full bg-accent transition-[width]")}
+            className={cn("h-full bg-accent transition-[width] duration-1000 ease-linear")}
             style={{ width: `${Math.min(100, progress * 100)}%` }}
           />
         </div>

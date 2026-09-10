@@ -27,11 +27,19 @@ export function BottomNav() {
               href={tab.href}
               className={cn(
                 "flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium",
+                "transition-colors duration-200 active:scale-95",
                 active ? "text-primary" : "text-text-tertiary",
               )}
               aria-current={active ? "page" : undefined}
             >
-              <tab.Icon className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
+              <tab.Icon
+                className={cn(
+                  "h-5 w-5 transition-transform duration-200 ease-out",
+                  active && "scale-110",
+                )}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
               {tab.label}
             </Link>
           );

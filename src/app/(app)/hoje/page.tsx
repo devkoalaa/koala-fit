@@ -138,7 +138,10 @@ export default async function HojePage() {
             </p>
           </Card>
         ) : (
-          <Link href={`/treino/${todaysWorkout.id}`}>
+          <Link
+            href={`/treino/${todaysWorkout.id}`}
+            className="block transition-transform duration-150 active:scale-[0.98]"
+          >
             <Card className="border-primary/40 bg-primary-soft">
               <p className="font-semibold text-text">Treino em andamento</p>
               <p className="text-sm text-text-secondary">Toque para continuar de onde parou.</p>

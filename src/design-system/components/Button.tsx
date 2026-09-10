@@ -40,7 +40,8 @@ export function Button({
     <button
       className={cn(
         "inline-flex min-h-11 min-w-11 items-center justify-center rounded-md font-medium",
-        "transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+        "transition-[background-color,color,transform,opacity] duration-150 ease-out",
+        "active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
         variantClasses[variant],
         sizeClasses[size],

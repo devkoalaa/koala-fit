@@ -77,8 +77,9 @@ export function NumberStepper({
           aria-label="Diminuir"
           className={cn(
             "flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-border",
-            "bg-surface text-xl font-semibold text-text active:bg-surface-hover",
-            "disabled:cursor-not-allowed disabled:opacity-40",
+            "bg-surface text-xl font-semibold text-text active:bg-surface-hover active:scale-90",
+            "transition-transform duration-100 ease-out",
+            "disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100",
           )}
         >
           −
@@ -116,8 +117,9 @@ export function NumberStepper({
           aria-label="Aumentar"
           className={cn(
             "flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-border",
-            "bg-surface text-xl font-semibold text-text active:bg-surface-hover",
-            "disabled:cursor-not-allowed disabled:opacity-40",
+            "bg-surface text-xl font-semibold text-text active:bg-surface-hover active:scale-90",
+            "transition-transform duration-100 ease-out",
+            "disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100",
           )}
         >
           +

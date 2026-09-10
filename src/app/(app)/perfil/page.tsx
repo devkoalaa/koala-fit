@@ -31,7 +31,7 @@ export default async function PerfilPage() {
 
       <Link
         href="/perfil/exportar"
-        className="flex min-h-12 items-center justify-between rounded-lg border border-border bg-bg-elevated px-4 text-text"
+        className="flex min-h-12 items-center justify-between rounded-lg border border-border bg-bg-elevated px-4 text-text transition-transform duration-150 active:scale-[0.98]"
       >
         <span className="font-medium">Exportar dados</span>
         <span className="text-text-tertiary" aria-hidden="true">
@@ -43,7 +43,7 @@ export default async function PerfilPage() {
           precisa de um ponto de entrada aqui dentro. Remover junto com a rota. */}
       <Link
         href="/debug"
-        className="flex min-h-12 items-center justify-between rounded-lg border border-border bg-bg-elevated px-4 text-text"
+        className="flex min-h-12 items-center justify-between rounded-lg border border-border bg-bg-elevated px-4 text-text transition-transform duration-150 active:scale-[0.98]"
       >
         <span className="font-medium">Diagnóstico</span>
         <span className="text-text-tertiary" aria-hidden="true">

@@ -36,7 +36,11 @@ export default async function RotinasPage() {
       ) : (
         <div className="flex flex-col gap-3">
           {items.map((r) => (
-            <Link key={r.id} href={`/rotinas/${r.id}`}>
+            <Link
+              key={r.id}
+              href={`/rotinas/${r.id}`}
+              className="block transition-transform duration-150 active:scale-[0.98]"
+            >
               <Card className="flex items-center justify-between">
                 <div>
                   <p className="font-semibold text-text">{r.name}</p>

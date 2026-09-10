@@ -6,7 +6,7 @@ import { cn } from "@/lib/cn";
 import { useHasMounted } from "@/lib/use-has-mounted";
 
 type ToastVariant = "default" | "success" | "danger";
-type ToastItem = { id: string; message: string; variant: ToastVariant };
+type ToastItem = { id: string; message: string; variant: ToastVariant; leaving: boolean };
 
 type ToastContextValue = {
   show: (message: string, variant?: ToastVariant) => void;
@@ -21,6 +21,7 @@ const variantClasses: Record<ToastVariant, string> = {
 };
 
 const DISMISS_AFTER_MS = 3500;
+const EXIT_DURATION_MS = 200;
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -28,10 +29,14 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   const show = useCallback((message: string, variant: ToastVariant = "default") => {
     const id = crypto.randomUUID();
-    setToasts((prev) => [...prev, { id, message, variant }]);
+    setToasts((prev) => [...prev, { id, message, variant, leaving: false }]);
+
     setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, DISMISS_AFTER_MS);
+      setToasts((prev) => prev.map((t) => (t.id === id ? { ...t, leaving: true } : t)));
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, EXIT_DURATION_MS);
+    }, DISMISS_AFTER_MS - EXIT_DURATION_MS);
   }, []);
 
   const value = useMemo(() => ({ show }), [show]);
@@ -49,6 +54,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 className={cn(
                   "pointer-events-auto w-full max-w-sm rounded-md px-4 py-3 text-sm font-medium shadow-lg",
                   variantClasses[toast.variant],
+                  toast.leaving
+                    ? "animate-[toast-slide-out_0.2s_ease-in_forwards]"
+                    : "animate-[toast-slide-in_0.25s_ease-out]",
                 )}
               >
                 {toast.message}

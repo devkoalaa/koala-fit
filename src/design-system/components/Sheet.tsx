@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
 import { useHasMounted } from "@/lib/use-has-mounted";
@@ -15,6 +15,23 @@ export type SheetProps = {
 
 export function Sheet({ open, onClose, title, children, className }: SheetProps) {
   const mounted = useHasMounted();
+
+  // Stays rendered (playing the exit animation) for one tick after `open`
+  // goes false, instead of vanishing instantly. Derived during render (the
+  // "adjusting state on a prop change" pattern) rather than an effect, since
+  // there's no timer involved — actual unmount is driven by onAnimationEnd.
+  const [rendered, setRendered] = useState(open);
+  const [closing, setClosing] = useState(false);
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) {
+      setRendered(true);
+      setClosing(false);
+    } else {
+      setClosing(true);
+    }
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -33,7 +50,7 @@ export function Sheet({ open, onClose, title, children, className }: SheetProps)
     };
   }, [open, onClose]);
 
-  if (!open || !mounted) return null;
+  if (!rendered || !mounted) return null;
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center">
@@ -41,16 +58,29 @@ export function Sheet({ open, onClose, title, children, className }: SheetProps)
         type="button"
         aria-label="Fechar"
         onClick={onClose}
-        className="absolute inset-0 bg-black/40"
+        className={cn(
+          "absolute inset-0 bg-black/40",
+          closing
+            ? "animate-[backdrop-fade-out_0.2s_ease-in_forwards]"
+            : "animate-[backdrop-fade-in_0.2s_ease-out]",
+        )}
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
+        onAnimationEnd={() => {
+          if (closing) {
+            setRendered(false);
+            setClosing(false);
+          }
+        }}
         className={cn(
           "relative w-full max-w-md rounded-t-xl bg-bg-elevated shadow-lg",
           "max-h-[calc(85vh-var(--safe-top))] overflow-y-auto pb-[var(--safe-bottom)]",
-          "animate-[sheet-slide-up_0.25s_ease-out]",
+          closing
+            ? "animate-[sheet-slide-down_0.2s_ease-in_forwards]"
+            : "animate-[sheet-slide-up_0.25s_ease-out]",
           className,
         )}
       >
