@@ -24,6 +24,6 @@ export const config = {
      * - Next internals (_next/static, _next/image)
      * - PWA/static files (manifest, icons, favicon, apple touch icon, service worker)
      */
-    "/((?!login|_next/static|_next/image|manifest\\.webmanifest|sw\\.js|icons|icon|apple-icon|apple-splash|favicon\\.ico).*)",
+    "/((?!login|_next/static|_next/image|manifest\\.webmanifest|sw\\.js|icons|icon|apple-icon|favicon\\.ico).*)",
   ],
 };

@@ -9,7 +9,7 @@ import {
   resolvedDataTheme,
   type ThemePreference,
 } from "@/lib/theme";
-import { APPLE_SPLASH_DEVICES } from "@/lib/apple-splash-devices";
+import { AppSplash } from "@/components/AppSplash";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -102,29 +102,14 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             {THEME_BOOT_SCRIPT}
           </Script>
         )}
-        {/* Next's `appleWebApp.capable` metadata only emits the newer generic
-            "mobile-web-app-capable" tag, not this one — but the splash-screen
-            feature specifically still keys off the legacy Apple-prefixed tag
-            on at least some iOS versions. Added explicitly. */}
+        {/* Kept even though the native splash below was removed: still
+            correct/harmless for standalone-mode support in general. */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        {/* iOS doesn't generate a splash screen from the manifest like Android
-            does — these give it one per device size instead of a blank flash
-            on launch. Hardcoded /koala-fit prefix for the same reason as the
-            icons above: basePath isn't auto-applied here. */}
-        {APPLE_SPLASH_DEVICES.map((d) => (
-          <link
-            key={`${d.widthCss}x${d.heightCss}@${d.dpr}`}
-            rel="apple-touch-startup-image"
-            href={`/koala-fit/apple-splash/${d.widthCss * d.dpr}x${d.heightCss * d.dpr}`}
-            media={`screen and (device-width: ${d.widthCss}px) and (device-height: ${d.heightCss}px) and (-webkit-device-pixel-ratio: ${d.dpr}) and (orientation: portrait)`}
-          />
-        ))}
-        {/* Catch-all with no media condition: covers any device whose exact
-            point size isn't in the list above (new models, etc.) instead of
-            falling back to a blank/black screen with nothing branded at all. */}
-        <link rel="apple-touch-startup-image" href="/koala-fit/apple-splash/1290x2796" />
       </head>
-      <body className="min-h-lvh flex flex-col">{children}</body>
+      <body className="min-h-lvh flex flex-col">
+        <AppSplash />
+        {children}
+      </body>
     </html>
   );
 }
