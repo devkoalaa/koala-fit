@@ -114,6 +114,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             media={`screen and (device-width: ${d.widthCss}px) and (device-height: ${d.heightCss}px) and (-webkit-device-pixel-ratio: ${d.dpr}) and (orientation: portrait)`}
           />
         ))}
+        {/* Catch-all with no media condition: covers any device whose exact
+            point size isn't in the list above (new models, etc.) instead of
+            falling back to a blank/black screen with nothing branded at all. */}
+        <link rel="apple-touch-startup-image" href="/koala-fit/apple-splash/1290x2796" />
       </head>
       <body className="min-h-lvh flex flex-col">{children}</body>
     </html>
