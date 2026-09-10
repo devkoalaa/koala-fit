@@ -111,7 +111,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             key={`${d.widthCss}x${d.heightCss}@${d.dpr}`}
             rel="apple-touch-startup-image"
             href={`/koala-fit/apple-splash/${d.widthCss * d.dpr}x${d.heightCss * d.dpr}`}
-            media={`(device-width: ${d.widthCss}px) and (device-height: ${d.heightCss}px) and (-webkit-device-pixel-ratio: ${d.dpr}) and (orientation: portrait)`}
+            media={`screen and (device-width: ${d.widthCss}px) and (device-height: ${d.heightCss}px) and (-webkit-device-pixel-ratio: ${d.dpr}) and (orientation: portrait)`}
           />
         ))}
       </head>
