@@ -16,6 +16,7 @@ export const exerciseCatalog: SeedExercise[] = [
   { name: "Supino reto máquina", muscleGroup: "chest", type: "weight" },
   { name: "Supino reto barra", muscleGroup: "chest", type: "weight" },
   { name: "Supino inclinado halteres", muscleGroup: "chest", type: "weight" },
+  { name: "Supino inclinado máquina", muscleGroup: "chest", type: "weight" },
   { name: "Crucifixo máquina (peck deck)", muscleGroup: "chest", type: "weight" },
   { name: "Crossover", muscleGroup: "chest", type: "weight" },
 
@@ -23,6 +24,7 @@ export const exerciseCatalog: SeedExercise[] = [
   { name: "Puxada frente", muscleGroup: "back", type: "weight" },
   { name: "Puxada triângulo", muscleGroup: "back", type: "weight" },
   { name: "Remada baixa", muscleGroup: "back", type: "weight" },
+  { name: "Remada máquina", muscleGroup: "back", type: "weight" },
   { name: "Remada curvada barra", muscleGroup: "back", type: "weight" },
   { name: "Remada cavalinho", muscleGroup: "back", type: "weight" },
   { name: "Pulldown", muscleGroup: "back", type: "weight" },
@@ -51,8 +53,11 @@ export const exerciseCatalog: SeedExercise[] = [
 
   // Pernas
   { name: "Leg press", muscleGroup: "legs", type: "weight" },
+  { name: "Leg press 45", muscleGroup: "legs", type: "weight" },
+  { name: "Leg press horizontal", muscleGroup: "legs", type: "weight" },
   { name: "Cadeira extensora", muscleGroup: "legs", type: "weight" },
   { name: "Cadeira flexora", muscleGroup: "legs", type: "weight" },
+  { name: "Mesa flexora", muscleGroup: "legs", type: "weight" },
   { name: "Agachamento livre", muscleGroup: "legs", type: "weight" },
   { name: "Agachamento smith", muscleGroup: "legs", type: "weight" },
   { name: "Cadeira adutora", muscleGroup: "legs", type: "weight" },
@@ -62,6 +67,7 @@ export const exerciseCatalog: SeedExercise[] = [
   // Glúteos
   { name: "Elevação pélvica", muscleGroup: "glutes", type: "weight" },
   { name: "Glúteo na polia", muscleGroup: "glutes", type: "weight" },
+  { name: "Glúteo máquina", muscleGroup: "glutes", type: "weight" },
 
   // Panturrilha
   { name: "Panturrilha em pé", muscleGroup: "calves", type: "weight" },
@@ -72,6 +78,7 @@ export const exerciseCatalog: SeedExercise[] = [
   { name: "Abdominal supra", muscleGroup: "abs", type: "weight" },
   { name: "Abdominal infra", muscleGroup: "abs", type: "weight" },
   { name: "Abdominal na polia", muscleGroup: "abs", type: "weight" },
+  { name: "Abdominal na paralela", muscleGroup: "abs", type: "weight" },
 
   // Corpo inteiro
   { name: "Levantamento terra", muscleGroup: "full_body", type: "weight" },
