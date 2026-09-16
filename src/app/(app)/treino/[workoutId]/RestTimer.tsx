@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { Flame } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { REST_SECONDS_DEFAULT, REST_SECONDS_MAX } from "@/lib/rest";
 
-const DEFAULT_SECONDS = 90;
+const EXTEND_SECONDS = 30;
 
 function playBeep() {
   try {
@@ -27,19 +28,27 @@ function playBeep() {
 
 export type RestTimerHandle = { start: (seconds?: number) => void };
 
-export function RestTimer({ onExposeHandle }: { onExposeHandle?: (handle: RestTimerHandle) => void }) {
+export function RestTimer({
+  defaultSeconds = REST_SECONDS_DEFAULT,
+  onExposeHandle,
+}: {
+  defaultSeconds?: number;
+  onExposeHandle?: (handle: RestTimerHandle) => void;
+}) {
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
-  const [total, setTotal] = useState(DEFAULT_SECONDS);
+  const [total, setTotal] = useState(defaultSeconds);
 
+  // Reexpõe o handle quando o descanso padrão muda (o usuário pode ajustar no
+  // meio do treino) — senão o `start()` ficaria preso no valor da montagem.
   useEffect(() => {
     onExposeHandle?.({
-      start: (seconds = DEFAULT_SECONDS) => {
+      start: (seconds = defaultSeconds) => {
         setTotal(seconds);
         setSecondsLeft(seconds);
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [defaultSeconds]);
 
   useEffect(() => {
     if (secondsLeft === null) return;
@@ -56,6 +65,11 @@ export function RestTimer({ onExposeHandle }: { onExposeHandle?: (handle: RestTi
   if (secondsLeft === null) return null;
 
   const progress = 1 - Math.max(0, secondsLeft) / total;
+
+  function extend() {
+    setTotal((t) => Math.min(REST_SECONDS_MAX, t + EXTEND_SECONDS));
+    setSecondsLeft((s) => (s === null ? null : Math.min(REST_SECONDS_MAX, s + EXTEND_SECONDS)));
+  }
 
   return (
     <div className="fixed inset-x-0 bottom-[calc(var(--bottom-nav-space)+0.75rem)] z-30 flex justify-center px-4">
@@ -75,6 +89,13 @@ export function RestTimer({ onExposeHandle }: { onExposeHandle?: (handle: RestTi
             style={{ width: `${Math.min(100, progress * 100)}%` }}
           />
         </div>
+        <button
+          type="button"
+          onClick={extend}
+          className="text-sm font-medium underline underline-offset-2"
+        >
+          +{EXTEND_SECONDS}s
+        </button>
         <button
           type="button"
           onClick={() => setSecondsLeft(null)}

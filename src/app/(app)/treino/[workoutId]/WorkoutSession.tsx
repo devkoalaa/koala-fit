@@ -2,12 +2,15 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { PartyPopper, Trophy, Frown, Annoyed, Meh, Smile, Laugh, type LucideIcon } from "lucide-react";
+import { PartyPopper, Trophy, Timer, Frown, Annoyed, Meh, Smile, Laugh, type LucideIcon } from "lucide-react";
 import { Card } from "@/design-system/components/Card";
 import { Button } from "@/design-system/components/Button";
 import { Sheet } from "@/design-system/components/Sheet";
+import { NumberStepper } from "@/design-system/components/NumberStepper";
 import { cn } from "@/lib/cn";
 import { deleteWorkout } from "@/lib/actions/workout-sets";
+import { updateRestSeconds } from "@/lib/actions/preferences";
+import { REST_SECONDS_MAX, REST_SECONDS_MIN, REST_SECONDS_STEP, formatRest } from "@/lib/rest";
 import { ExerciseCard } from "./ExerciseCard";
 import { RestTimer, type RestTimerHandle } from "./RestTimer";
 import { finishWorkout, type FinishWorkoutResult } from "./actions";
@@ -25,12 +28,21 @@ export function WorkoutSession({
   workoutId,
   routineName,
   exercises,
+  restSeconds: initialRestSeconds,
 }: {
   workoutId: string;
   routineName: string;
   exercises: ExerciseSession[];
+  restSeconds: number;
 }) {
-  const [expandedId, setExpandedId] = useState<string | null>(exercises[0]?.routineExerciseId ?? null);
+  // Todos os exercícios começam fechados: abrir o primeiro escondia a lista
+  // e dava a impressão de que só ele podia ser preenchido.
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [restSeconds, setRestSeconds] = useState(initialRestSeconds);
+  // Valor persistido, para desfazer o ajuste se a folha for fechada sem salvar.
+  const [savedRestSeconds, setSavedRestSeconds] = useState(initialRestSeconds);
+  const [restOpen, setRestOpen] = useState(false);
+  const [savingRest, startRestTransition] = useTransition();
   const [finishOpen, setFinishOpen] = useState(false);
   const [feeling, setFeeling] = useState<number | null>(null);
   const [result, setResult] = useState<FinishWorkoutResult | null>(null);
@@ -45,6 +57,19 @@ export function WorkoutSession({
       const summary = await finishWorkout(workoutId, feeling);
       setResult(summary);
     });
+  }
+
+  function saveRest() {
+    startRestTransition(async () => {
+      await updateRestSeconds(restSeconds);
+      setSavedRestSeconds(restSeconds);
+      setRestOpen(false);
+    });
+  }
+
+  function closeRest() {
+    setRestSeconds(savedRestSeconds);
+    setRestOpen(false);
   }
 
   function handleDelete() {
@@ -72,6 +97,15 @@ export function WorkoutSession({
         </button>
       </div>
 
+      <button
+        type="button"
+        onClick={() => setRestOpen(true)}
+        className="flex min-h-9 w-fit items-center gap-1.5 rounded-full border border-border bg-bg-elevated px-3 text-sm font-medium text-text-secondary"
+      >
+        <Timer className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+        Descanso {formatRest(restSeconds)}
+      </button>
+
       <div className="flex flex-col gap-3">
         {exercises.map((item) => (
           <ExerciseCard
@@ -91,7 +125,27 @@ export function WorkoutSession({
         Finalizar treino
       </Button>
 
-      <RestTimer onExposeHandle={(h) => (timerRef.current = h)} />
+      <RestTimer defaultSeconds={restSeconds} onExposeHandle={(h) => (timerRef.current = h)} />
+
+      <Sheet open={restOpen} onClose={closeRest} title="Tempo de descanso">
+        <div className="flex flex-col gap-4">
+          <NumberStepper
+            value={restSeconds}
+            min={REST_SECONDS_MIN}
+            max={REST_SECONDS_MAX}
+            step={REST_SECONDS_STEP}
+            suffix="s"
+            onChange={setRestSeconds}
+          />
+          <p className="text-sm text-text-secondary">
+            O timer aparece a cada série concluída. Vale também para os próximos treinos — dá para
+            mudar de novo aqui ou no Perfil.
+          </p>
+          <Button fullWidth size="lg" loading={savingRest} onClick={saveRest}>
+            Salvar
+          </Button>
+        </div>
+      </Sheet>
 
       <Sheet open={finishOpen} onClose={() => !result && setFinishOpen(false)} title={result ? undefined : "Como você se sentiu?"}>
         {!result ? (

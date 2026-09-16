@@ -8,7 +8,7 @@ import { formatDateBR } from "@/lib/date";
 import { getAllTimePersonalRecords } from "@/lib/personal-records";
 import { EmptyState } from "@/design-system/components/EmptyState";
 import { EditableExerciseGroup } from "./EditableExerciseGroup";
-import { EditableCardioCard } from "./EditableCardioCard";
+import { EditableCardioCard, type CardioEntry } from "./EditableCardioCard";
 import { EditableFeeling } from "./EditableFeeling";
 import { AddExerciseToWorkoutSheet } from "./AddExerciseToWorkoutSheet";
 import { DeleteWorkoutButton } from "./DeleteWorkoutButton";
@@ -52,13 +52,15 @@ export default async function WorkoutDetailPage({
     .select({
       exerciseId: cardioSessions.exerciseId,
       exerciseName: exercises.name,
+      entryNumber: cardioSessions.entryNumber,
       durationSeconds: cardioSessions.durationSeconds,
       distanceMeters: cardioSessions.distanceMeters,
       inclinePercent: cardioSessions.inclinePercent,
     })
     .from(cardioSessions)
     .innerJoin(exercises, eq(cardioSessions.exerciseId, exercises.id))
-    .where(eq(cardioSessions.workoutId, workoutId));
+    .where(eq(cardioSessions.workoutId, workoutId))
+    .orderBy(exercises.name, cardioSessions.entryNumber);
 
   const allTimeRecords = await getAllTimePersonalRecords(user.id);
   const recordsToday = new Set(
@@ -74,6 +76,23 @@ export default async function WorkoutDetailPage({
       },
       {},
     ),
+  );
+
+  // Um mesmo cardio pode ter vários blocos no treino (5 min no aquecimento +
+  // 15 min no fim) — todos vão no mesmo card.
+  const cardioGroups = Object.values(
+    cardio.reduce<
+      Record<string, { exerciseId: string; exerciseName: string; entries: CardioEntry[] }>
+    >((acc, c) => {
+      acc[c.exerciseId] ??= { exerciseId: c.exerciseId, exerciseName: c.exerciseName, entries: [] };
+      acc[c.exerciseId].entries.push({
+        entryNumber: c.entryNumber,
+        durationMin: Math.round(c.durationSeconds / 60),
+        distanceKm: c.distanceMeters ? Number(c.distanceMeters) / 1000 : 0,
+        inclinePercent: c.inclinePercent ? Number(c.inclinePercent) : 0,
+      });
+      return acc;
+    }, {}),
   );
 
   const totalVolume = loggedSets.reduce((sum, s) => sum + Number(s.weightKg) * s.reps, 0);
@@ -135,15 +154,13 @@ export default async function WorkoutDetailPage({
           />
         ))}
 
-        {cardio.map((c) => (
+        {cardioGroups.map((group) => (
           <EditableCardioCard
-            key={c.exerciseId}
+            key={group.exerciseId}
             workoutId={workoutId}
-            exerciseId={c.exerciseId}
-            exerciseName={c.exerciseName}
-            initialDurationSeconds={c.durationSeconds}
-            initialDistanceMeters={c.distanceMeters ? Number(c.distanceMeters) : null}
-            initialInclinePercent={c.inclinePercent ? Number(c.inclinePercent) : null}
+            exerciseId={group.exerciseId}
+            exerciseName={group.exerciseName}
+            initialEntries={group.entries}
           />
         ))}
 

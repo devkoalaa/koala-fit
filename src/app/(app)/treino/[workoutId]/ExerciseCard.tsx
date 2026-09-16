@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Lightbulb, Check, ChevronDown } from "lucide-react";
+import { Lightbulb, Check, ChevronDown, Trash2 } from "lucide-react";
 import { Card } from "@/design-system/components/Card";
 import { NumberStepper } from "@/design-system/components/NumberStepper";
 import { Button } from "@/design-system/components/Button";
 import { cn } from "@/lib/cn";
-import { logSet, logCardio } from "@/lib/actions/workout-sets";
+import { logSet, logCardio, deleteCardio } from "@/lib/actions/workout-sets";
 import type { ExerciseSession } from "./types";
 
 type SetRow = {
@@ -15,6 +15,38 @@ type SetRow = {
   weightKg: number;
   done: boolean;
 };
+
+type CardioRow = {
+  entryNumber: number;
+  durationMin: number;
+  distanceKm: number;
+  inclinePercent: number;
+  done: boolean;
+};
+
+function defaultCardioRow(item: ExerciseSession, entryNumber: number): CardioRow {
+  return {
+    entryNumber,
+    durationMin: Math.round((item.targetDurationSeconds ?? 600) / 60),
+    distanceKm: (item.targetDistanceMeters ?? 0) / 1000,
+    inclinePercent: 0,
+    done: false,
+  };
+}
+
+// Sem nada registrado, mostra um bloco em branco com o alvo da rotina; com
+// blocos já registrados, mostra todos (e o "+ Bloco extra" adiciona mais).
+function buildCardioRows(item: ExerciseSession): CardioRow[] {
+  if (item.loggedCardio.length === 0) return [defaultCardioRow(item, 1)];
+
+  return item.loggedCardio.map((c) => ({
+    entryNumber: c.entryNumber,
+    durationMin: Math.round(c.durationSeconds / 60),
+    distanceKm: (c.distanceMeters ?? 0) / 1000,
+    inclinePercent: c.inclinePercent ?? 0,
+    done: true,
+  }));
+}
 
 function buildRows(item: ExerciseSession, count: number): SetRow[] {
   return Array.from({ length: count }, (_, i) => {
@@ -52,28 +84,23 @@ export function ExerciseCard({
   );
   const [pending, startTransition] = useTransition();
 
-  const [cardioDuration, setCardioDuration] = useState(
-    Math.round(
-      (item.loggedCardio?.durationSeconds ??
-        item.targetDurationSeconds ??
-        600) / 60,
-    ),
+  const [cardioRows, setCardioRows] = useState<CardioRow[]>(() =>
+    buildCardioRows(item),
   );
-  const [cardioDistance, setCardioDistance] = useState(
-    item.loggedCardio?.distanceMeters != null
-      ? item.loggedCardio.distanceMeters / 1000
-      : (item.targetDistanceMeters ?? 0) / 1000,
-  );
-  const [cardioIncline, setCardioIncline] = useState(
-    item.loggedCardio?.inclinePercent ?? 0,
-  );
-  const [cardioDone, setCardioDone] = useState(Boolean(item.loggedCardio));
 
   const doneCount = rows.filter((r) => r.done).length;
+  const cardioDoneCount = cardioRows.filter((r) => r.done).length;
+  // Com blocos registrados o subtítulo vira o que foi feito ("5 + 15 min"),
+  // não o alvo da rotina.
   const target =
     item.exerciseType === "weight"
       ? `${item.targetSets}x${item.targetRepsMin ?? "?"}-${item.targetRepsMax ?? "?"}`
-      : `${Math.round((item.targetDurationSeconds ?? 0) / 60)} min`;
+      : cardioDoneCount > 0
+        ? `${cardioRows
+            .filter((r) => r.done)
+            .map((r) => r.durationMin)
+            .join(" + ")} min`
+        : `${Math.round((item.targetDurationSeconds ?? 0) / 60)} min`;
 
   function updateRow(setNumber: number, patch: Partial<SetRow>) {
     setRows((prev) =>
@@ -106,16 +133,41 @@ export function ExerciseCard({
     ]);
   }
 
-  function completeCardio() {
-    setCardioDone(true);
+  function updateCardioRow(entryNumber: number, patch: Partial<CardioRow>) {
+    setCardioRows((prev) =>
+      prev.map((r) => (r.entryNumber === entryNumber ? { ...r, ...patch } : r)),
+    );
+  }
+
+  function completeCardio(row: CardioRow) {
+    updateCardioRow(row.entryNumber, { done: true });
     startTransition(() =>
       logCardio(workoutId, {
         exerciseId: item.exerciseId,
-        durationSeconds: Math.round(cardioDuration * 60),
-        distanceMeters: cardioDistance > 0 ? cardioDistance * 1000 : undefined,
-        inclinePercent: cardioIncline > 0 ? cardioIncline : undefined,
+        entryNumber: row.entryNumber,
+        durationSeconds: Math.round(row.durationMin * 60),
+        distanceMeters: row.distanceKm > 0 ? row.distanceKm * 1000 : undefined,
+        inclinePercent: row.inclinePercent > 0 ? row.inclinePercent : undefined,
       }),
     );
+  }
+
+  function addCardioEntry() {
+    setCardioRows((prev) => {
+      const nextNumber = Math.max(...prev.map((r) => r.entryNumber)) + 1;
+      const last = prev[prev.length - 1];
+      return [
+        ...prev,
+        { ...defaultCardioRow(item, nextNumber), inclinePercent: last?.inclinePercent ?? 0 },
+      ];
+    });
+  }
+
+  function removeCardioEntry(row: CardioRow) {
+    setCardioRows((prev) => prev.filter((r) => r.entryNumber !== row.entryNumber));
+    if (row.done) {
+      startTransition(() => deleteCardio(workoutId, item.exerciseId, row.entryNumber));
+    }
   }
 
   return (
@@ -141,13 +193,17 @@ export function ExerciseCard({
             >
               {doneCount}/{item.targetSets}
             </span>
+          ) : cardioDoneCount === cardioRows.length ? (
+            <Check
+              className="h-4 w-4 text-primary"
+              strokeWidth={2}
+              aria-hidden="true"
+            />
           ) : (
-            cardioDone && (
-              <Check
-                className="h-4 w-4 text-primary"
-                strokeWidth={2}
-                aria-hidden="true"
-              />
+            cardioRows.length > 1 && (
+              <span className="rounded-full bg-surface px-2.5 py-1 text-xs font-semibold text-text-secondary">
+                {cardioDoneCount}/{cardioRows.length}
+              </span>
             )
           )}
           <ChevronDown
@@ -256,49 +312,84 @@ export function ExerciseCard({
                 </button>
               </>
             ) : (
-              <div className="flex flex-col gap-3 rounded-md bg-surface p-3">
-                <NumberStepper
-                  label="Duração (min)"
-                  value={cardioDuration}
-                  min={1}
-                  max={180}
-                  onChange={setCardioDuration}
-                />
-                <NumberStepper
-                  label="Distância (km)"
-                  value={cardioDistance}
-                  min={0}
-                  max={100}
-                  step={0.1}
-                  onChange={setCardioDistance}
-                />
-                <NumberStepper
-                  label="Inclinação (%)"
-                  value={cardioIncline}
-                  min={0}
-                  max={20}
-                  step={0.5}
-                  onChange={setCardioIncline}
-                />
-                <Button
-                  variant={cardioDone ? "secondary" : "primary"}
-                  onClick={completeCardio}
-                  disabled={pending}
+              <>
+                {cardioRows.map((row, index) => (
+                  <div
+                    key={row.entryNumber}
+                    className="flex flex-col gap-3 rounded-md bg-surface p-3"
+                  >
+                    {cardioRows.length > 1 && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-text">
+                          Bloco {index + 1}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeCardioEntry(row)}
+                          className="flex h-8 w-8 items-center justify-center text-text-tertiary"
+                          aria-label={`Remover bloco ${index + 1}`}
+                        >
+                          <Trash2 className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+                        </button>
+                      </div>
+                    )}
+                    <NumberStepper
+                      label="Duração (min)"
+                      value={row.durationMin}
+                      min={1}
+                      max={180}
+                      onChange={(v) =>
+                        updateCardioRow(row.entryNumber, { durationMin: v })
+                      }
+                    />
+                    <NumberStepper
+                      label="Distância (km)"
+                      value={row.distanceKm}
+                      min={0}
+                      max={100}
+                      step={0.1}
+                      onChange={(v) =>
+                        updateCardioRow(row.entryNumber, { distanceKm: v })
+                      }
+                    />
+                    <NumberStepper
+                      label="Inclinação (%)"
+                      value={row.inclinePercent}
+                      min={0}
+                      max={20}
+                      step={0.5}
+                      onChange={(v) =>
+                        updateCardioRow(row.entryNumber, { inclinePercent: v })
+                      }
+                    />
+                    <Button
+                      variant={row.done ? "secondary" : "primary"}
+                      onClick={() => completeCardio(row)}
+                      disabled={pending}
+                    >
+                      {row.done ? (
+                        <>
+                          Registrado{" "}
+                          <Check
+                            className="h-4 w-4"
+                            strokeWidth={2}
+                            aria-hidden="true"
+                          />
+                        </>
+                      ) : (
+                        "Concluir"
+                      )}
+                    </Button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addCardioEntry}
+                  className="min-h-11 text-sm font-medium text-primary"
                 >
-                  {cardioDone ? (
-                    <>
-                      Registrado{" "}
-                      <Check
-                        className="h-4 w-4"
-                        strokeWidth={2}
-                        aria-hidden="true"
-                      />
-                    </>
-                  ) : (
-                    "Concluir"
-                  )}
-                </Button>
-              </div>
+                  + Bloco extra
+                </button>
+              </>
             )}
           </div>
         </div>

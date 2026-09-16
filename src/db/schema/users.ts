@@ -11,6 +11,9 @@ export const users = pgTable("users", {
   heightCm: integer("height_cm"),
   theme: themeEnum("theme").notNull().default("system"),
   weeklyGoal: integer("weekly_goal").notNull().default(3),
+  // Descanso padrão entre séries, em segundos — alimenta o timer da tela de
+  // treino em andamento.
+  restSeconds: integer("rest_seconds").notNull().default(90),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

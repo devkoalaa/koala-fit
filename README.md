@@ -61,8 +61,9 @@ pnpm dev
 
 Acesse `http://localhost:3000` — o login pede o email/senha criados acima.
 
-Depois de logar, configure em **Perfil**: meta semanal de treinos e os dias
-da semana em que você pretende treinar (isso alimenta a lógica de ofensiva).
+Depois de logar, configure em **Perfil**: meta semanal de treinos, os dias
+da semana em que você pretende treinar (isso alimenta a lógica de ofensiva) e
+o descanso entre séries (o mesmo ajuste fica no topo da tela de treino).
 Crie ao menos uma rotina em **Rotinas** antes de usar a tela **Hoje**.
 
 ### Outros comandos úteis

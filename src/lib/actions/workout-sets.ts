@@ -81,28 +81,61 @@ export async function deleteSet(workoutIdInput: string, exerciseId: string, setN
   revalidateWorkoutPaths(workoutId);
 }
 
+// `entryNumber` separa blocos do mesmo cardio dentro de um treino (5 min de
+// esteira no aquecimento + 15 min no fim) — mesmo papel do `setNumber` da
+// musculação. Quem não passa nada continua escrevendo no bloco 1.
 const cardioSchema = z.object({
   exerciseId: z.uuid(),
+  entryNumber: z.number().int().min(1).max(20).default(1),
   durationSeconds: z.number().int().min(1),
   distanceMeters: z.number().min(0).optional(),
   inclinePercent: z.number().min(0).max(50).optional(),
 });
 
-export async function logCardio(workoutIdInput: string, input: z.infer<typeof cardioSchema>) {
+export async function logCardio(workoutIdInput: string, input: z.input<typeof cardioSchema>) {
   const { workoutId } = await requireOwnedWorkout(workoutIdInput);
   const parsed = cardioSchema.parse(input);
 
   await db
-    .delete(cardioSessions)
-    .where(and(eq(cardioSessions.workoutId, workoutId), eq(cardioSessions.exerciseId, parsed.exerciseId)));
+    .insert(cardioSessions)
+    .values({
+      workoutId,
+      exerciseId: parsed.exerciseId,
+      entryNumber: parsed.entryNumber,
+      durationSeconds: parsed.durationSeconds,
+      distanceMeters: parsed.distanceMeters?.toString() ?? null,
+      inclinePercent: parsed.inclinePercent?.toString() ?? null,
+    })
+    .onConflictDoUpdate({
+      target: [cardioSessions.workoutId, cardioSessions.exerciseId, cardioSessions.entryNumber],
+      set: {
+        durationSeconds: parsed.durationSeconds,
+        distanceMeters: parsed.distanceMeters?.toString() ?? null,
+        inclinePercent: parsed.inclinePercent?.toString() ?? null,
+      },
+    });
 
-  await db.insert(cardioSessions).values({
-    workoutId,
-    exerciseId: parsed.exerciseId,
-    durationSeconds: parsed.durationSeconds,
-    distanceMeters: parsed.distanceMeters?.toString(),
-    inclinePercent: parsed.inclinePercent?.toString(),
-  });
+  revalidateWorkoutPaths(workoutId);
+}
+
+const deleteCardioSchema = z.object({
+  exerciseId: z.uuid(),
+  entryNumber: z.number().int().min(1).max(20),
+});
+
+export async function deleteCardio(workoutIdInput: string, exerciseId: string, entryNumber: number) {
+  const { workoutId } = await requireOwnedWorkout(workoutIdInput);
+  const parsed = deleteCardioSchema.parse({ exerciseId, entryNumber });
+
+  await db
+    .delete(cardioSessions)
+    .where(
+      and(
+        eq(cardioSessions.workoutId, workoutId),
+        eq(cardioSessions.exerciseId, parsed.exerciseId),
+        eq(cardioSessions.entryNumber, parsed.entryNumber),
+      ),
+    );
 
   revalidateWorkoutPaths(workoutId);
 }

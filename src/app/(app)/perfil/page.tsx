@@ -25,7 +25,12 @@ export default async function PerfilPage() {
         <p className="text-sm text-text-secondary">{user.email}</p>
       </div>
 
-      <ProfileForm initialHeightCm={user.heightCm} initialWeeklyGoal={user.weeklyGoal} initialTheme={user.theme} />
+      <ProfileForm
+        initialHeightCm={user.heightCm}
+        initialWeeklyGoal={user.weeklyGoal}
+        initialRestSeconds={user.restSeconds}
+        initialTheme={user.theme}
+      />
 
       <TrainingScheduleEditor initialDays={scheduleRows.map((r) => r.weekday as Weekday)} />
 

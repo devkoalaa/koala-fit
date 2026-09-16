@@ -10,6 +10,7 @@ import { users, trainingSchedule } from "@/db/schema";
 import { weekdayEnum } from "@/db/schema/enums";
 import { getCurrentUser } from "@/lib/auth/session";
 import { THEME_COOKIE } from "@/lib/theme";
+import { REST_SECONDS_MAX, REST_SECONDS_MIN } from "@/lib/rest";
 
 async function requireUser() {
   const user = await getCurrentUser();
@@ -20,6 +21,7 @@ async function requireUser() {
 const profileSchema = z.object({
   heightCm: z.number().int().positive().max(280).nullable(),
   weeklyGoal: z.number().int().min(0).max(14),
+  restSeconds: z.number().int().min(REST_SECONDS_MIN).max(REST_SECONDS_MAX),
   theme: z.enum(["light", "dark", "system"]),
 });
 
@@ -29,7 +31,13 @@ export async function updateProfile(input: z.infer<typeof profileSchema>) {
 
   await db
     .update(users)
-    .set({ heightCm: parsed.heightCm, weeklyGoal: parsed.weeklyGoal, theme: parsed.theme, updatedAt: new Date() })
+    .set({
+      heightCm: parsed.heightCm,
+      weeklyGoal: parsed.weeklyGoal,
+      restSeconds: parsed.restSeconds,
+      theme: parsed.theme,
+      updatedAt: new Date(),
+    })
     .where(eq(users.id, user.id));
 
   const cookieStore = await cookies();

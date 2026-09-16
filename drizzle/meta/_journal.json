@@ -8,6 +8,13 @@
       "when": 1788985906529,
       "tag": "0000_friendly_molten_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789562010086,
+      "tag": "0001_cardio_entries_and_rest_seconds",
+      "breakpoints": true
     }
   ]
 }

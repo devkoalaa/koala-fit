@@ -56,7 +56,6 @@ export default async function TreinoPage({
     routineItems.map(async (item) => {
       const lastPerformance =
         item.exerciseType === "weight" ? await getLastPerformance(user.id, item.exerciseId, workoutId) : [];
-      const cardio = loggedCardio.find((c) => c.exerciseId === item.exerciseId);
       const suggestProgression =
         item.exerciseType === "weight"
           ? await shouldSuggestProgression(
@@ -82,19 +81,26 @@ export default async function TreinoPage({
           .filter((s) => s.exerciseId === item.exerciseId)
           .map((s) => ({ setNumber: s.setNumber, reps: s.reps, weightKg: Number(s.weightKg) })),
         lastPerformance,
-        loggedCardio: cardio
-          ? {
-              durationSeconds: cardio.durationSeconds,
-              distanceMeters: cardio.distanceMeters ? Number(cardio.distanceMeters) : null,
-              inclinePercent: cardio.inclinePercent ? Number(cardio.inclinePercent) : null,
-            }
-          : null,
+        loggedCardio: loggedCardio
+          .filter((c) => c.exerciseId === item.exerciseId)
+          .sort((a, b) => a.entryNumber - b.entryNumber)
+          .map((c) => ({
+            entryNumber: c.entryNumber,
+            durationSeconds: c.durationSeconds,
+            distanceMeters: c.distanceMeters ? Number(c.distanceMeters) : null,
+            inclinePercent: c.inclinePercent ? Number(c.inclinePercent) : null,
+          })),
         suggestProgression,
       };
     }),
   );
 
   return (
-    <WorkoutSession workoutId={workout.id} routineName={routine?.name ?? "Treino livre"} exercises={exerciseSessions} />
+    <WorkoutSession
+      workoutId={workout.id}
+      routineName={routine?.name ?? "Treino livre"}
+      exercises={exerciseSessions}
+      restSeconds={user.restSeconds}
+    />
   );
 }

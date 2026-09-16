@@ -1,5 +1,14 @@
 export type LoggedSet = { setNumber: number; reps: number; weightKg: number };
 
+// Um treino pode ter vários blocos do mesmo cardio (aquecimento + final);
+// `entryNumber` é o que os separa dentro do par (treino, exercício).
+export type LoggedCardio = {
+  entryNumber: number;
+  durationSeconds: number;
+  distanceMeters: number | null;
+  inclinePercent: number | null;
+};
+
 export type ExerciseSession = {
   routineExerciseId: string;
   exerciseId: string;
@@ -12,6 +21,6 @@ export type ExerciseSession = {
   targetDistanceMeters: number | null;
   loggedSets: LoggedSet[];
   lastPerformance: LoggedSet[];
-  loggedCardio: { durationSeconds: number; distanceMeters: number | null; inclinePercent: number | null } | null;
+  loggedCardio: LoggedCardio[];
   suggestProgression: boolean;
 };
