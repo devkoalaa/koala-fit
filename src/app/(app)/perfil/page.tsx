@@ -25,14 +25,19 @@ export default async function PerfilPage() {
         <p className="text-sm text-text-secondary">{user.email}</p>
       </div>
 
-      <ProfileForm
-        initialHeightCm={user.heightCm}
-        initialWeeklyGoal={user.weeklyGoal}
-        initialRestSeconds={user.restSeconds}
-        initialTheme={user.theme}
-      />
+      <ProfileForm initialHeightCm={user.heightCm} initialWeeklyGoal={user.weeklyGoal} initialTheme={user.theme} />
 
       <TrainingScheduleEditor initialDays={scheduleRows.map((r) => r.weekday as Weekday)} />
+
+      <Link
+        href="/perfil/configuracoes"
+        className="flex min-h-12 items-center justify-between rounded-lg border border-border bg-bg-elevated px-4 text-text transition-transform duration-150 active:scale-[0.98]"
+      >
+        <span className="font-medium">Configurações</span>
+        <span className="text-text-tertiary" aria-hidden="true">
+          ›
+        </span>
+      </Link>
 
       <Link
         href="/perfil/exportar"

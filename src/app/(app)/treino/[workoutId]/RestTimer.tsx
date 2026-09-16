@@ -38,8 +38,9 @@ export function RestTimer({
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
   const [total, setTotal] = useState(defaultSeconds);
 
-  // Reexpõe o handle quando o descanso padrão muda (o usuário pode ajustar no
-  // meio do treino) — senão o `start()` ficaria preso no valor da montagem.
+  // Reexpõe o handle quando o descanso padrão muda (o ajuste em
+  // Perfil → Configurações revalida esta tela) — senão o `start()` ficaria
+  // preso no valor da montagem.
   useEffect(() => {
     onExposeHandle?.({
       start: (seconds = defaultSeconds) => {
