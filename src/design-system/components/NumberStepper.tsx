@@ -7,9 +7,6 @@ export type NumberStepperProps = {
   value: number;
   onChange: (value: number) => void;
   step?: number;
-  // Casas decimais aceitas ao digitar. Padrão: as do `step` — passe mais
-  // quando os botões andam de inteiro em inteiro mas o valor pode ser 12,5.
-  decimals?: number;
   min?: number;
   max?: number;
   label?: string;
@@ -25,8 +22,9 @@ function clamp(value: number, min?: number, max?: number) {
   return result;
 }
 
-function stepDecimals(step: number) {
-  return (step.toString().split(".")[1] ?? "").length;
+function roundToStep(value: number, step: number) {
+  const decimals = (step.toString().split(".")[1] ?? "").length;
+  return Number(value.toFixed(decimals));
 }
 
 /**
@@ -37,7 +35,6 @@ export function NumberStepper({
   value,
   onChange,
   step = 1,
-  decimals,
   min,
   max,
   label,
@@ -56,8 +53,7 @@ export function NumberStepper({
   }
 
   function commit(next: number) {
-    const precision = Math.max(decimals ?? 0, stepDecimals(step));
-    const clamped = clamp(Number(next.toFixed(precision)), min, max);
+    const clamped = clamp(roundToStep(next, step), min, max);
     onChange(clamped);
   }
 

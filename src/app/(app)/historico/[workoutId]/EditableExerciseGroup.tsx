@@ -98,7 +98,6 @@ export function EditableExerciseGroup({
                 min={0}
                 max={999}
                 step={1}
-                decimals={2}
                 suffix="kg"
                 onChange={(v) => updateRow(row.setNumber, { weightKg: v })}
               />
