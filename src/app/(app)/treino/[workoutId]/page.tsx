@@ -40,6 +40,7 @@ export default async function TreinoPage({
           targetRepsMax: routineExercises.targetRepsMax,
           targetDurationSeconds: routineExercises.targetDurationSeconds,
           targetDistanceMeters: routineExercises.targetDistanceMeters,
+          notes: routineExercises.notes,
           exerciseName: exercises.name,
           exerciseType: exercises.type,
         })
@@ -58,13 +59,7 @@ export default async function TreinoPage({
         item.exerciseType === "weight" ? await getLastPerformance(user.id, item.exerciseId, workoutId) : [];
       const suggestProgression =
         item.exerciseType === "weight"
-          ? await shouldSuggestProgression(
-              user.id,
-              item.exerciseId,
-              item.targetRepsMax,
-              item.targetSets,
-              workoutId,
-            )
+          ? shouldSuggestProgression(lastPerformance, item.targetRepsMax, item.targetSets)
           : false;
 
       return {
@@ -77,6 +72,7 @@ export default async function TreinoPage({
         targetRepsMax: item.targetRepsMax,
         targetDurationSeconds: item.targetDurationSeconds,
         targetDistanceMeters: item.targetDistanceMeters ? Number(item.targetDistanceMeters) : null,
+        notes: item.notes,
         loggedSets: loggedSets
           .filter((s) => s.exerciseId === item.exerciseId)
           .map((s) => ({ setNumber: s.setNumber, reps: s.reps, weightKg: Number(s.weightKg) })),

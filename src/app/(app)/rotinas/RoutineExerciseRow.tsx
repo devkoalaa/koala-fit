@@ -18,6 +18,7 @@ export type RoutineExerciseData = {
   targetRepsMin: number | null;
   targetRepsMax: number | null;
   targetDurationSeconds: number | null;
+  notes: string | null;
   isFirst: boolean;
   isLast: boolean;
 };
@@ -46,7 +47,10 @@ export function RoutineExerciseRow({
   return (
     <Card className="flex flex-col gap-3">
       <div className="flex items-start justify-between gap-2">
-        <p className="font-semibold text-text">{item.exerciseName}</p>
+        <div>
+          <p className="font-semibold text-text">{item.exerciseName}</p>
+          {item.notes && <p className="text-sm text-text-secondary">{item.notes}</p>}
+        </div>
         <div className="flex shrink-0 items-center gap-1">
           <button
             type="button"

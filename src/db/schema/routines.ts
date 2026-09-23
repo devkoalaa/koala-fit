@@ -53,6 +53,8 @@ export const routineExercises = pgTable(
       precision: 8,
       scale: 2,
     }),
+    // Observação livre do exercício na rotina ("joelhos dobrados", "15–20 min").
+    notes: text("notes"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

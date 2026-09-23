@@ -65,7 +65,18 @@ Depois de logar, configure em **Perfil**: meta semanal de treinos e os dias
 da semana em que você pretende treinar (isso alimenta a lógica de ofensiva).
 Em **Perfil → Configurações** ficam os ajustes de comportamento do app —
 hoje, o tempo de descanso entre séries.
-Crie ao menos uma rotina em **Rotinas** antes de usar a tela **Hoje**.
+Crie ao menos uma rotina em **Rotinas** antes de usar a tela **Hoje** — ou
+carregue o plano atual (Treino A e Treino B, alternados, 2–3x por semana):
+
+```bash
+pnpm seed:plano                    # único usuário do banco
+pnpm seed:plano -- --email voce@example.com
+```
+
+Idempotente, e não mexe em treinos já registrados. Se já existir uma rotina
+"Treino A"/"Treino B" com exercícios, ela é mantida; `-- --replace` reescreve
+a lista de exercícios dela (a rotina mantém o id, então o histórico continua
+ligado a ela).
 
 ### Outros comandos úteis
 
@@ -90,6 +101,7 @@ Crie ao menos uma rotina em **Rotinas** antes de usar a tela **Hoje**.
    pnpm db:migrate
    pnpm seed
    pnpm seed:user
+   pnpm seed:plano   # opcional: rotinas Treino A/B
    ```
 4. PWA: o manifest (`/manifest.webmanifest`) e os ícones já estão
    configurados — "Adicionar à tela de início" funciona direto, sem passos

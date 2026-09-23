@@ -19,6 +19,7 @@ export type ExerciseSession = {
   targetRepsMax: number | null;
   targetDurationSeconds: number | null;
   targetDistanceMeters: number | null;
+  notes: string | null;
   loggedSets: LoggedSet[];
   lastPerformance: LoggedSet[];
   loggedCardio: LoggedCardio[];

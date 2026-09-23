@@ -11,7 +11,8 @@
     "db:migrate": "dotenv -e .env.local -- drizzle-kit migrate",
     "db:studio": "dotenv -e .env.local -- drizzle-kit studio",
     "seed": "dotenv -e .env.local -- tsx src/db/seed/index.ts",
-    "seed:user": "dotenv -e .env.local -- tsx src/db/seed/user.ts"
+    "seed:user": "dotenv -e .env.local -- tsx src/db/seed/user.ts",
+    "seed:plano": "dotenv -e .env.local -- tsx src/db/seed/training-plan.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
