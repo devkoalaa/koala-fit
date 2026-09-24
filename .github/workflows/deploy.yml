@@ -1,0 +1,47 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Self-hosted runner installed on the Oracle server itself (ARM64), so the
+    # image is built natively and deployed without pushing to a registry.
+    runs-on: [self-hosted, koala-server]
+    env:
+      COMPOSE_PROJECT_NAME: koala-fit
+      KOALA_FIT_ENV_FILE: /home/ubuntu/apps/koala-fit/.env
+      GIT_COMMIT_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build images
+        run: docker compose --profile migrate build
+
+      - name: Run migrations
+        run: docker compose --profile migrate run --rm migrate
+
+      - name: Start app
+        run: docker compose up -d app
+
+      - name: Health check
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS -o /dev/null http://127.0.0.1:3000/login; then
+              echo "App is up"
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose logs --tail 50 app
+          exit 1
+
+      - name: Clean up old images
+        if: always()
+        run: docker image prune -f

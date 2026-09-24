@@ -4,11 +4,11 @@
 // "use server" action, a Server Component, or a "server-only"-guarded lib
 // module (session.ts, streak.ts, ...) — no client component ever imports
 // `db` directly.
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 import { env } from "@/lib/env";
 import * as schema from "./schema";
 
-const sql = neon(env.DATABASE_URL);
+const pool = new Pool({ connectionString: env.DATABASE_URL });
 
-export const db = drizzle(sql, { schema });
+export const db = drizzle(pool, { schema });

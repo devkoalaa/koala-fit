@@ -1,12 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Served under devkoala.xyz/koala-fit via a reverse-proxy rewrite in the
-  // rayonometro (gateway) project — this makes every internal link, redirect,
-  // and asset URL Next.js generates consistently carry the /koala-fit
-  // prefix, matching what that rewrite expects. As a result the app is only
-  // reachable at that base path now, on any domain (including *.vercel.app).
-  basePath: "/koala-fit",
+  // Self-hosted in a Docker container on the Oracle server, served at the root
+  // of fit.devkoala.xyz behind Caddy. "standalone" emits a minimal server.js
+  // plus only the node_modules it actually needs, keeping the image small.
+  output: "standalone",
 };
 
 export default nextConfig;
