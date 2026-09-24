@@ -25,14 +25,9 @@ export const metadata: Metadata = {
   title: "Koala Fit",
   description: "Registre seus treinos, acompanhe sua evolução e mantenha a constância.",
   manifest: "/manifest.webmanifest",
-  // Neither the icon.tsx/apple-icon.tsx file-convention <link> tags NOR an
-  // unprefixed path declared here pick up `basePath` automatically (unlike
-  // `manifest` above — `icons` can point at an external URL, so Next.js
-  // doesn't assume it's same-origin/relative). The prefix has to be
-  // hardcoded; it must match next.config.ts's basePath.
   icons: {
-    icon: "/koala-fit/icon",
-    apple: "/koala-fit/apple-icon",
+    icon: "/icon",
+    apple: "/apple-icon",
   },
   appleWebApp: {
     capable: true,

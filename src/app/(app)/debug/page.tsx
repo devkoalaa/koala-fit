@@ -4,7 +4,7 @@ import { SafeAreaProbe } from "./SafeAreaProbe";
 // layout and bottom nav as every other screen — the probe measures the real
 // nav, not a stand-in — and prints the build actually being served.
 export default function DebugPage() {
-  const sha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "local";
+  const sha = process.env.GIT_COMMIT_SHA?.slice(0, 7) ?? "local";
 
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 pt-6 pb-4">

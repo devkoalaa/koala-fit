@@ -1,0 +1,32 @@
+# Production stack on the Oracle server. Postgres runs in its own compose
+# project (~/apps/postgres) on the shared external "db" network; this file only
+# owns the app. DATABASE_URL comes from KOALA_FIT_ENV_FILE (set by the deploy
+# workflow to ~/apps/koala-fit/.env on the server) or a local .env.
+services:
+  migrate:
+    build:
+      context: .
+      target: migrator
+    env_file: ${KOALA_FIT_ENV_FILE:-.env}
+    networks: [db]
+    profiles: [migrate]
+
+  app:
+    build:
+      context: .
+      target: runner
+      args:
+        GIT_COMMIT_SHA: ${GIT_COMMIT_SHA:-local}
+    image: koala-fit:latest
+    container_name: koala-fit
+    restart: unless-stopped
+    env_file: ${KOALA_FIT_ENV_FILE:-.env}
+    environment:
+      TZ: America/Sao_Paulo
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks: [db]
+
+networks:
+  db:
+    external: true
