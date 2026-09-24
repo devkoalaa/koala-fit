@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [main, self-host] # TODO: remover self-host antes do merge
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
