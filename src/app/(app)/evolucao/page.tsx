@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { and, eq, gte, sql } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/db/client";
-import { workouts, sets, exercises, bodyWeightLogs, trainingSchedule } from "@/db/schema";
+import { workouts, sets, exercises, bodyWeightLogs, bodyCompositionLogs, trainingSchedule } from "@/db/schema";
 import { toISODate, addDays, startOfWeek, weekdayOf, formatDateBR } from "@/lib/date";
 import { isPeriod, periodStartDate, type Period } from "@/lib/period";
 import { Card } from "@/design-system/components/Card";
@@ -10,14 +10,15 @@ import { LineChart } from "@/components/charts/LineChart";
 import { BarChart } from "@/components/charts/BarChart";
 import { HeatmapCalendar, type HeatmapDay } from "@/components/charts/HeatmapCalendar";
 import { PeriodFilter } from "@/components/PeriodFilter";
-import { ExerciseSelect } from "./ExerciseSelect";
+import { BODY_METRICS, findBodyMetric, formatMetric, lastPerDay, metricValue } from "@/lib/body-composition";
+import { SearchParamSelect } from "./SearchParamSelect";
 
 const HEATMAP_WEEKS = 16;
 
 export default async function EvolucaoPage({
   searchParams,
 }: {
-  searchParams: Promise<{ period?: string; exercise?: string }>;
+  searchParams: Promise<{ period?: string; exercise?: string; metric?: string }>;
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
@@ -37,6 +38,25 @@ export default async function EvolucaoPage({
     label: formatDateBR(r.date).slice(0, 5),
     value: Number(r.weightKg),
   }));
+
+  const compositionRows = lastPerDay(
+    await db
+      .select()
+      .from(bodyCompositionLogs)
+      .where(
+        and(
+          eq(bodyCompositionLogs.userId, user.id),
+          periodStart ? gte(bodyCompositionLogs.date, periodStart) : undefined,
+        ),
+      )
+      .orderBy(bodyCompositionLogs.measuredAt),
+  );
+  const selectedMetric = findBodyMetric(params.metric);
+  const metricPoints = compositionRows.flatMap((r) => {
+    const value = metricValue(r, selectedMetric);
+    return value === null ? [] : [{ label: formatDateBR(r.date).slice(0, 5), value }];
+  });
+  const latestComposition = compositionRows.at(-1);
 
   const exerciseOptions = await db
     .selectDistinct({ id: exercises.id, name: exercises.name })
@@ -122,11 +142,46 @@ export default async function EvolucaoPage({
 
       <Card>
         <div className="mb-2 flex items-center justify-between gap-2">
+          <p className="font-semibold text-text">Composição corporal</p>
+          {latestComposition && (
+            <p className="text-xs text-text-tertiary">Última: {formatDateBR(latestComposition.date)}</p>
+          )}
+        </div>
+        {latestComposition ? (
+          <div className="flex flex-col gap-3">
+            <SearchParamSelect
+              param="metric"
+              options={BODY_METRICS.map((m) => ({ id: m.id, name: m.label }))}
+              current={selectedMetric.id}
+            />
+            <LineChart points={metricPoints} unit={selectedMetric.unit} />
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+              {BODY_METRICS.map((m) => {
+                const value = metricValue(latestComposition, m);
+                if (value === null) return null;
+                return (
+                  <div key={m.id} className="flex justify-between gap-2">
+                    <dt className="text-text-secondary">{m.label}</dt>
+                    <dd className="font-medium text-text tabular-nums">{formatMetric(value, m)}</dd>
+                  </div>
+                );
+              })}
+            </dl>
+          </div>
+        ) : (
+          <p className="py-4 text-center text-sm text-text-tertiary">
+            Encaminhe o relatório da balança para o bot do Telegram para ver esse gráfico.
+          </p>
+        )}
+      </Card>
+
+      <Card>
+        <div className="mb-2 flex items-center justify-between gap-2">
           <p className="font-semibold text-text">Carga máxima</p>
         </div>
         {exerciseOptions.length > 0 && selectedExerciseId ? (
           <div className="flex flex-col gap-3">
-            <ExerciseSelect options={exerciseOptions} current={selectedExerciseId} />
+            <SearchParamSelect param="exercise" options={exerciseOptions} current={selectedExerciseId} />
             <LineChart points={maxLoadPoints} unit="kg" />
           </div>
         ) : (

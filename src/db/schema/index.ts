@@ -10,3 +10,4 @@ export * from "./body-weight-logs";
 export * from "./training-schedule";
 export * from "./streak-state";
 export * from "./notes";
+export * from "./body-composition-logs";
