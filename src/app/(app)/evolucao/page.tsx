@@ -161,8 +161,10 @@ export default async function EvolucaoPage({
                 if (value === null) return null;
                 return (
                   <div key={m.id} className="flex justify-between gap-2">
-                    <dt className="text-text-secondary">{m.label}</dt>
-                    <dd className="font-medium text-text tabular-nums">{formatMetric(value, m)}</dd>
+                    <dt className="min-w-0 text-text-secondary">{m.label}</dt>
+                    <dd className="shrink-0 whitespace-nowrap text-right font-medium text-text tabular-nums">
+                      {formatMetric(value, m)}
+                    </dd>
                   </div>
                 );
               })}

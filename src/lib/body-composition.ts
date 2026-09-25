@@ -43,6 +43,7 @@ export function formatMetric(value: number, metric: BodyMetric): string {
     minimumFractionDigits: metric.decimals,
     maximumFractionDigits: metric.decimals,
   });
+  if (metric.unit === "%") return `${text}%`;
   return metric.unit ? `${text} ${metric.unit}` : text;
 }
 
