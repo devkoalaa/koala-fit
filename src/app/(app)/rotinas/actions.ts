@@ -156,6 +156,33 @@ export async function updateRoutineExerciseTargets(
   revalidatePath(`/rotinas/${id}`);
 }
 
+const notesSchema = z.string().trim().max(200);
+
+export async function updateRoutineExerciseNotes(
+  routineExerciseId: string,
+  routineId: string,
+  notes: string,
+) {
+  const user = await requireUser();
+  const itemId = z.uuid().parse(routineExerciseId);
+  const id = z.uuid().parse(routineId);
+  const parsed = notesSchema.parse(notes);
+
+  const [owned] = await db
+    .select({ id: routines.id })
+    .from(routines)
+    .where(and(eq(routines.id, id), eq(routines.userId, user.id)))
+    .limit(1);
+  if (!owned) throw new Error("Rotina não encontrada.");
+
+  await db
+    .update(routineExercises)
+    .set({ notes: parsed || null })
+    .where(and(eq(routineExercises.id, itemId), eq(routineExercises.routineId, id)));
+
+  revalidatePath(`/rotinas/${id}`);
+}
+
 const moveDirectionSchema = z.enum(["up", "down"]);
 
 export async function moveRoutineExercise(

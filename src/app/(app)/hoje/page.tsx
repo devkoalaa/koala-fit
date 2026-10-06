@@ -10,6 +10,7 @@ import { getStreakSummary, getCurrentWeekStatus } from "@/lib/streak";
 import { getNextRoutine } from "@/lib/routines";
 import { detectPersonalRecords } from "@/lib/personal-records";
 import { buildTodayMessage } from "@/lib/insights";
+import { formatWeeklyGoal } from "@/lib/weekly-goal";
 import { getTopExerciseTrend } from "@/lib/trends";
 import { Card } from "@/design-system/components/Card";
 import { ProgressRing } from "@/design-system/components/ProgressRing";
@@ -118,7 +119,10 @@ export default async function HojePage() {
           <div className="flex items-baseline justify-between">
             <span className="text-sm text-text-secondary">Essa semana</span>
             <span className="text-sm font-semibold text-text">
-              {week.doneCount}/{user.weeklyGoal || week.scheduledCount || 0}
+              {week.doneCount}/
+              {user.weeklyGoal
+                ? formatWeeklyGoal(user.weeklyGoal, user.weeklyGoalMax)
+                : week.scheduledCount || 0}
             </span>
           </div>
           <WeekStrip days={week.days} />

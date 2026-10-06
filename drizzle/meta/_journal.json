@@ -22,6 +22,13 @@
       "when": 1790309677636,
       "tag": "0002_body_composition_logs",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791290651944,
+      "tag": "0003_exercise_notes_and_goal_range",
+      "breakpoints": true
     }
   ]
 }

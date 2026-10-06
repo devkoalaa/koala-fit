@@ -11,6 +11,9 @@ export const users = pgTable("users", {
   heightCm: integer("height_cm"),
   theme: themeEnum("theme").notNull().default("system"),
   weeklyGoal: integer("weekly_goal").notNull().default(3),
+  // Teto opcional da meta semanal: com weeklyGoal = 2 e weeklyGoalMax = 3 a
+  // meta vira "2–3x por semana" (2 já conta como meta batida).
+  weeklyGoalMax: integer("weekly_goal_max"),
   // Descanso padrão entre séries, em segundos — alimenta o timer da tela de
   // treino em andamento.
   restSeconds: integer("rest_seconds").notNull().default(90),

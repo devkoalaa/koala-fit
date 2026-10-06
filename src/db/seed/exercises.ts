@@ -15,13 +15,17 @@ export const exerciseCatalog: SeedExercise[] = [
   // Peito
   { name: "Supino reto máquina", muscleGroup: "chest", type: "weight" },
   { name: "Supino reto barra", muscleGroup: "chest", type: "weight" },
+  { name: "Supino reto com barra", muscleGroup: "chest", type: "weight" },
   { name: "Supino inclinado halteres", muscleGroup: "chest", type: "weight" },
+  { name: "Supino inclinado (halteres)", muscleGroup: "chest", type: "weight" },
   { name: "Supino inclinado máquina", muscleGroup: "chest", type: "weight" },
   { name: "Crucifixo máquina (peck deck)", muscleGroup: "chest", type: "weight" },
   { name: "Crossover", muscleGroup: "chest", type: "weight" },
+  { name: "Crucifixo", muscleGroup: "chest", type: "weight" },
 
   // Costas
   { name: "Puxada frente", muscleGroup: "back", type: "weight" },
+  { name: "Puxada alta", muscleGroup: "back", type: "weight" },
   { name: "Puxada triângulo", muscleGroup: "back", type: "weight" },
   { name: "Remada baixa", muscleGroup: "back", type: "weight" },
   { name: "Remada máquina", muscleGroup: "back", type: "weight" },
@@ -33,6 +37,7 @@ export const exerciseCatalog: SeedExercise[] = [
   { name: "Desenvolvimento máquina", muscleGroup: "shoulders", type: "weight" },
   { name: "Desenvolvimento halteres", muscleGroup: "shoulders", type: "weight" },
   { name: "Elevação lateral", muscleGroup: "shoulders", type: "weight" },
+  { name: "Elevação lateral (halteres)", muscleGroup: "shoulders", type: "weight" },
   { name: "Elevação frontal", muscleGroup: "shoulders", type: "weight" },
   { name: "Remada alta", muscleGroup: "shoulders", type: "weight" },
 
@@ -41,11 +46,13 @@ export const exerciseCatalog: SeedExercise[] = [
   { name: "Rosca alternada halteres", muscleGroup: "biceps", type: "weight" },
   { name: "Rosca scott", muscleGroup: "biceps", type: "weight" },
   { name: "Rosca cabo", muscleGroup: "biceps", type: "weight" },
+  { name: "Bíceps scott", muscleGroup: "biceps", type: "weight" },
 
   // Tríceps
   { name: "Tríceps pulley", muscleGroup: "triceps", type: "weight" },
   { name: "Tríceps testa", muscleGroup: "triceps", type: "weight" },
   { name: "Tríceps corda", muscleGroup: "triceps", type: "weight" },
+  { name: "Tríceps na puxada alta (corda)", muscleGroup: "triceps", type: "weight" },
   { name: "Mergulho no banco", muscleGroup: "triceps", type: "weight" },
 
   // Antebraço
@@ -60,6 +67,7 @@ export const exerciseCatalog: SeedExercise[] = [
   { name: "Mesa flexora", muscleGroup: "legs", type: "weight" },
   { name: "Agachamento livre", muscleGroup: "legs", type: "weight" },
   { name: "Agachamento smith", muscleGroup: "legs", type: "weight" },
+  { name: "Agachamento no Smith", muscleGroup: "legs", type: "weight" },
   { name: "Cadeira adutora", muscleGroup: "legs", type: "weight" },
   { name: "Cadeira abdutora", muscleGroup: "legs", type: "weight" },
   { name: "Afundo", muscleGroup: "legs", type: "weight" },
@@ -79,6 +87,7 @@ export const exerciseCatalog: SeedExercise[] = [
   { name: "Abdominal infra", muscleGroup: "abs", type: "weight" },
   { name: "Abdominal na polia", muscleGroup: "abs", type: "weight" },
   { name: "Abdominal na paralela", muscleGroup: "abs", type: "weight" },
+  { name: "Paralela abdominal", muscleGroup: "abs", type: "weight" },
 
   // Corpo inteiro
   { name: "Levantamento terra", muscleGroup: "full_body", type: "weight" },

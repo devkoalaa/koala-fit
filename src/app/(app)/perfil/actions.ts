@@ -20,16 +20,19 @@ async function requireUser() {
 const profileSchema = z.object({
   heightCm: z.number().int().positive().max(280).nullable(),
   weeklyGoal: z.number().int().min(0).max(14),
+  weeklyGoalMax: z.number().int().min(0).max(14).nullable(),
   theme: z.enum(["light", "dark", "system"]),
 });
 
 export async function updateProfile(input: z.infer<typeof profileSchema>) {
   const user = await requireUser();
   const parsed = profileSchema.parse(input);
+  const weeklyGoalMax =
+    parsed.weeklyGoalMax != null && parsed.weeklyGoalMax > parsed.weeklyGoal ? parsed.weeklyGoalMax : null;
 
   await db
     .update(users)
-    .set({ heightCm: parsed.heightCm, weeklyGoal: parsed.weeklyGoal, theme: parsed.theme, updatedAt: new Date() })
+    .set({ heightCm: parsed.heightCm, weeklyGoal: parsed.weeklyGoal, weeklyGoalMax, theme: parsed.theme, updatedAt: new Date() })
     .where(eq(users.id, user.id));
 
   const cookieStore = await cookies();

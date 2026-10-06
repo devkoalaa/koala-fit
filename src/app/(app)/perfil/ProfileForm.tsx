@@ -18,21 +18,32 @@ const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
 export function ProfileForm({
   initialHeightCm,
   initialWeeklyGoal,
+  initialWeeklyGoalMax,
   initialTheme,
 }: {
   initialHeightCm: number | null;
   initialWeeklyGoal: number;
+  initialWeeklyGoalMax: number | null;
   initialTheme: ThemePreference;
 }) {
   const [heightCm, setHeightCm] = useState(initialHeightCm ?? 170);
   const [weeklyGoal, setWeeklyGoal] = useState(initialWeeklyGoal);
+  // Teto igual à meta = sem faixa (salva como null).
+  const [weeklyGoalMax, setWeeklyGoalMax] = useState(
+    Math.max(initialWeeklyGoalMax ?? initialWeeklyGoal, initialWeeklyGoal),
+  );
   const [theme, setTheme] = useState<ThemePreference>(initialTheme);
   const [pending, startTransition] = useTransition();
   const { show } = useToast();
 
   function save() {
     startTransition(async () => {
-      await updateProfile({ heightCm, weeklyGoal, theme });
+      await updateProfile({
+        heightCm,
+        weeklyGoal,
+        weeklyGoalMax: weeklyGoalMax > weeklyGoal ? weeklyGoalMax : null,
+        theme,
+      });
       show("Perfil atualizado.", "success");
     });
   }
@@ -45,7 +56,17 @@ export function ProfileForm({
         value={weeklyGoal}
         min={0}
         max={14}
-        onChange={setWeeklyGoal}
+        onChange={(v) => {
+          setWeeklyGoal(v);
+          setWeeklyGoalMax((max) => Math.max(max, v));
+        }}
+      />
+      <NumberStepper
+        label="Meta semanal (máximo)"
+        value={weeklyGoalMax}
+        min={weeklyGoal}
+        max={14}
+        onChange={setWeeklyGoalMax}
       />
 
       <div className="flex flex-col gap-1.5">

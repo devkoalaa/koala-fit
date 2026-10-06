@@ -4,9 +4,11 @@ import { useTransition } from "react";
 import { ArrowUp, ArrowDown, Trash2 } from "lucide-react";
 import { Card } from "@/design-system/components/Card";
 import { NumberStepper } from "@/design-system/components/NumberStepper";
+import { Input } from "@/design-system/components/Input";
 import {
   moveRoutineExercise,
   removeExerciseFromRoutine,
+  updateRoutineExerciseNotes,
   updateRoutineExerciseTargets,
 } from "./actions";
 
@@ -18,6 +20,7 @@ export type RoutineExerciseData = {
   targetRepsMin: number | null;
   targetRepsMax: number | null;
   targetDurationSeconds: number | null;
+  notes: string | null;
   isFirst: boolean;
   isLast: boolean;
 };
@@ -113,6 +116,18 @@ export function RoutineExerciseRow({
           />
         )}
       </div>
+
+      <Input
+        label="Observação"
+        placeholder="Ex.: joelhos dobrados"
+        defaultValue={item.notes ?? ""}
+        maxLength={200}
+        onBlur={(e) => {
+          const value = e.currentTarget.value;
+          if (value.trim() === (item.notes ?? "")) return;
+          startTransition(() => updateRoutineExerciseNotes(item.id, routineId, value));
+        }}
+      />
     </Card>
   );
 }
