@@ -15,6 +15,7 @@ import { getStreakSummary } from "@/lib/streak";
 import { getAllTimePersonalRecords } from "@/lib/personal-records";
 import { toISODate } from "@/lib/date";
 import { periodStartDate, type Period } from "@/lib/period";
+import { formatWeeklyGoal } from "@/lib/weekly-goal";
 
 export type ExportData = {
   exported_at: string;
@@ -123,7 +124,7 @@ export async function buildExportData(userId: string, period: Period): Promise<E
     profile: {
       height_cm: user.heightCm,
       training_days: scheduleRows.map((r) => r.weekday),
-      goal: `${user.weeklyGoal}x por semana`,
+      goal: `${formatWeeklyGoal(user.weeklyGoal, user.weeklyGoalMax)}x por semana`,
     },
     body_weight: weightRows.map((r) => ({ date: r.date, kg: Number(r.weightKg) })),
     streak: { current: streak.currentStreak, longest: streak.longestStreak },

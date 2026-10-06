@@ -32,6 +32,7 @@ export default async function RoutineDetailPage({
       targetRepsMin: routineExercises.targetRepsMin,
       targetRepsMax: routineExercises.targetRepsMax,
       targetDurationSeconds: routineExercises.targetDurationSeconds,
+      notes: routineExercises.notes,
       exerciseName: exercises.name,
       exerciseType: exercises.type,
     })

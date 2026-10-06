@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Lightbulb, Check, ChevronDown, Trash2 } from "lucide-react";
+import { Lightbulb, Check, ChevronDown, Trash2, Info } from "lucide-react";
 import { Card } from "@/design-system/components/Card";
 import { NumberStepper } from "@/design-system/components/NumberStepper";
 import { Button } from "@/design-system/components/Button";
 import { cn } from "@/lib/cn";
+import { getLoadHint } from "@/lib/load-hints";
 import { logSet, logCardio, deleteCardio } from "@/lib/actions/workout-sets";
 import type { ExerciseSession } from "./types";
 
@@ -83,6 +84,7 @@ export function ExerciseCard({
     buildRows(item, initialCount),
   );
   const [pending, startTransition] = useTransition();
+  const loadHint = item.exerciseType === "weight" ? getLoadHint(item.exerciseName) : null;
 
   const [cardioRows, setCardioRows] = useState<CardioRow[]>(() =>
     buildCardioRows(item),
@@ -234,8 +236,21 @@ export function ExerciseCard({
                   strokeWidth={2}
                   aria-hidden="true"
                 />
-                Você bateu o topo da faixa nas últimas 2 sessões — que tal subir
-                a carga hoje?
+                Na última sessão você fez {item.targetRepsMax} reps em todas as
+                séries — hora de subir a carga.
+              </div>
+            )}
+            {item.notes && (
+              <p className="text-sm text-text-secondary">{item.notes}</p>
+            )}
+            {loadHint && (
+              <div className="flex items-start gap-2 rounded-md bg-surface px-3 py-2 text-sm text-text-secondary">
+                <Info
+                  className="mt-0.5 h-4 w-4 shrink-0"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
+                {loadHint}
               </div>
             )}
             {item.exerciseType === "weight" ? (
