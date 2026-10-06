@@ -24,4 +24,6 @@ export type ExerciseSession = {
   lastPerformance: LoggedSet[];
   loggedCardio: LoggedCardio[];
   suggestProgression: boolean;
+  // Adicionado durante o treino, fora da rotina.
+  isExtra?: boolean;
 };

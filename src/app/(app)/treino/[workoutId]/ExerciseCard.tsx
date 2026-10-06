@@ -96,13 +96,17 @@ export function ExerciseCard({
   // não o alvo da rotina.
   const target =
     item.exerciseType === "weight"
-      ? `${item.targetSets}x${item.targetRepsMin ?? "?"}-${item.targetRepsMax ?? "?"}`
+      ? item.isExtra
+        ? "Fora da rotina"
+        : `${item.targetSets}x${item.targetRepsMin ?? "?"}-${item.targetRepsMax ?? "?"}`
       : cardioDoneCount > 0
         ? `${cardioRows
             .filter((r) => r.done)
             .map((r) => r.durationMin)
             .join(" + ")} min`
-        : `${Math.round((item.targetDurationSeconds ?? 0) / 60)} min`;
+        : item.isExtra
+          ? "Fora da rotina"
+          : `${Math.round((item.targetDurationSeconds ?? 0) / 60)} min`;
 
   function updateRow(setNumber: number, patch: Partial<SetRow>) {
     setRows((prev) =>

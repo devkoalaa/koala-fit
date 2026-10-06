@@ -9,6 +9,7 @@ import { Sheet } from "@/design-system/components/Sheet";
 import { cn } from "@/lib/cn";
 import { deleteWorkout } from "@/lib/actions/workout-sets";
 import { ExerciseCard } from "./ExerciseCard";
+import { AddExtraExerciseSheet, type ExerciseOption } from "./AddExtraExerciseSheet";
 import { RestTimer, type RestTimerHandle } from "./RestTimer";
 import { finishWorkout, type FinishWorkoutResult } from "./actions";
 import type { ExerciseSession } from "./types";
@@ -25,11 +26,13 @@ export function WorkoutSession({
   workoutId,
   routineName,
   exercises,
+  catalog,
   restSeconds,
 }: {
   workoutId: string;
   routineName: string;
   exercises: ExerciseSession[];
+  catalog: ExerciseOption[];
   restSeconds: number;
 }) {
   // Todos os exercícios começam fechados: abrir o primeiro escondia a lista
@@ -42,6 +45,14 @@ export function WorkoutSession({
   const [deleting, startDeleteTransition] = useTransition();
   const timerRef = useRef<RestTimerHandle | null>(null);
   const router = useRouter();
+
+  // Extras escolhidos agora e ainda sem série registrada. Depois da primeira
+  // série o servidor passa a mandá-los em `exercises`, e a cópia local some.
+  const [addedExtras, setAddedExtras] = useState<ExerciseSession[]>([]);
+  const allExercises = [
+    ...exercises,
+    ...addedExtras.filter((a) => !exercises.some((e) => e.exerciseId === a.exerciseId)),
+  ];
 
   function handleFinish() {
     if (feeling === null) return;
@@ -77,7 +88,7 @@ export function WorkoutSession({
       </div>
 
       <div className="flex flex-col gap-3">
-        {exercises.map((item) => (
+        {allExercises.map((item) => (
           <ExerciseCard
             key={item.routineExerciseId}
             workoutId={workoutId}
@@ -89,6 +100,15 @@ export function WorkoutSession({
             onSetLogged={() => timerRef.current?.start()}
           />
         ))}
+        <AddExtraExerciseSheet
+          workoutId={workoutId}
+          options={catalog}
+          existingExerciseIds={allExercises.map((e) => e.exerciseId)}
+          onAdded={(session) => {
+            setAddedExtras((prev) => [...prev, session]);
+            setExpandedId(session.routineExerciseId);
+          }}
+        />
       </div>
 
       <Button size="lg" fullWidth onClick={() => setFinishOpen(true)}>

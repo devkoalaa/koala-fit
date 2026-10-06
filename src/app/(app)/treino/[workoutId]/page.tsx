@@ -1,11 +1,12 @@
 import { notFound, redirect } from "next/navigation";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray, isNull, or } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/db/client";
 import { workouts, routines, routineExercises, exercises, sets, cardioSessions } from "@/db/schema";
 import { getLastPerformance } from "@/lib/workout-data";
 import { shouldSuggestProgression } from "@/lib/progression";
 import { WorkoutSession } from "./WorkoutSession";
+import { buildExtraSession, mapLoggedCardio, mapLoggedSets } from "./extra-exercise";
 import type { ExerciseSession } from "./types";
 
 export default async function TreinoPage({
@@ -79,29 +80,51 @@ export default async function TreinoPage({
         targetDurationSeconds: item.targetDurationSeconds,
         targetDistanceMeters: item.targetDistanceMeters ? Number(item.targetDistanceMeters) : null,
         notes: item.notes,
-        loggedSets: loggedSets
-          .filter((s) => s.exerciseId === item.exerciseId)
-          .map((s) => ({ setNumber: s.setNumber, reps: s.reps, weightKg: Number(s.weightKg) })),
+        loggedSets: mapLoggedSets(loggedSets, item.exerciseId),
         lastPerformance,
-        loggedCardio: loggedCardio
-          .filter((c) => c.exerciseId === item.exerciseId)
-          .sort((a, b) => a.entryNumber - b.entryNumber)
-          .map((c) => ({
-            entryNumber: c.entryNumber,
-            durationSeconds: c.durationSeconds,
-            distanceMeters: c.distanceMeters ? Number(c.distanceMeters) : null,
-            inclinePercent: c.inclinePercent ? Number(c.inclinePercent) : null,
-          })),
+        loggedCardio: mapLoggedCardio(loggedCardio, item.exerciseId),
         suggestProgression,
       };
     }),
   );
 
+  // Exercícios fora da rotina que já têm algo registrado neste treino, na
+  // ordem em que foram registrados.
+  const routineExerciseIds = new Set(routineItems.map((i) => i.exerciseId));
+  const extraIds = [
+    ...new Set(
+      [...loggedSets, ...loggedCardio]
+        .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+        .map((row) => row.exerciseId)
+        .filter((id) => !routineExerciseIds.has(id)),
+    ),
+  ];
+  const extraExercises =
+    extraIds.length > 0
+      ? await db
+          .select({ id: exercises.id, name: exercises.name, type: exercises.type })
+          .from(exercises)
+          .where(inArray(exercises.id, extraIds))
+      : [];
+  const extraSessions = await Promise.all(
+    extraIds
+      .map((id) => extraExercises.find((e) => e.id === id))
+      .filter((e) => e !== undefined)
+      .map((e) => buildExtraSession(user.id, workoutId, e, loggedSets, loggedCardio)),
+  );
+
+  const catalog = await db
+    .select({ id: exercises.id, name: exercises.name, type: exercises.type })
+    .from(exercises)
+    .where(or(isNull(exercises.userId), eq(exercises.userId, user.id)))
+    .orderBy(exercises.name);
+
   return (
     <WorkoutSession
       workoutId={workout.id}
       routineName={routine?.name ?? "Treino livre"}
-      exercises={exerciseSessions}
+      exercises={[...exerciseSessions, ...extraSessions]}
+      catalog={catalog}
       restSeconds={user.restSeconds}
     />
   );
