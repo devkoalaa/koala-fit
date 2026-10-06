@@ -113,6 +113,11 @@ export default async function EvolucaoPage({
     .from(workouts)
     .where(eq(workouts.userId, user.id));
   const workoutDateSet = new Set(allWorkoutDateRows.map((r) => r.date));
+  // Antes do primeiro treino o app nem era usado: esses dias não são falta.
+  const firstWorkoutDate = allWorkoutDateRows.reduce<string | null>(
+    (min, r) => (min === null || r.date < min ? r.date : min),
+    null,
+  );
 
   const thisWeekStart = startOfWeek(today);
   const heatmapStart = addDays(thisWeekStart, -(HEATMAP_WEEKS - 1) * 7);
@@ -123,11 +128,26 @@ export default async function EvolucaoPage({
       let status: HeatmapDay["status"];
       if (date > today) status = "future";
       else if (workoutDateSet.has(date)) status = "trained";
+      else if (!firstWorkoutDate || date < firstWorkoutDate) status = "inactive";
       else if (schedule.has(weekdayOf(date))) status = "missed";
       else status = "off-schedule";
       return { date, status };
     });
   });
+
+  const heatmapDays = heatmapWeeks.flat();
+  const trainedCount = heatmapDays.filter((d) => d.status === "trained").length;
+  const plannedCount = heatmapDays.filter(
+    (d) => d.status === "missed" || (d.status === "trained" && schedule.has(weekdayOf(d.date))),
+  ).length;
+  const plannedTrainedCount = heatmapDays.filter(
+    (d) => d.status === "trained" && schedule.has(weekdayOf(d.date)),
+  ).length;
+  // Média só sobre as semanas em que o app já estava em uso.
+  const activeWeeks = heatmapWeeks.filter((week) =>
+    week.some((d) => d.status !== "inactive" && d.status !== "future"),
+  ).length;
+  const weeklyAverage = activeWeeks > 0 ? trainedCount / activeWeeks : 0;
 
   return (
     <div className="flex flex-1 flex-col gap-5 px-4 pt-6 pb-4">
@@ -199,7 +219,28 @@ export default async function EvolucaoPage({
       </Card>
 
       <Card>
-        <p className="mb-2 font-semibold text-text">Constância</p>
+        <div className="mb-4 flex flex-col gap-0.5">
+          <p className="font-semibold text-text">Constância</p>
+          <p className="text-xs text-text-tertiary">Últimas {HEATMAP_WEEKS} semanas</p>
+        </div>
+        <div className="mb-4 grid grid-cols-3 gap-2">
+          <div>
+            <p className="text-xl font-bold text-text">{trainedCount}</p>
+            <p className="text-xs text-text-secondary">treinos</p>
+          </div>
+          <div>
+            <p className="text-xl font-bold text-text">
+              {weeklyAverage.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}
+            </p>
+            <p className="text-xs text-text-secondary">por semana</p>
+          </div>
+          <div>
+            <p className="text-xl font-bold text-text">
+              {plannedCount > 0 ? `${Math.round((plannedTrainedCount / plannedCount) * 100)}%` : "—"}
+            </p>
+            <p className="text-xs text-text-secondary">do planejado</p>
+          </div>
+        </div>
         <HeatmapCalendar weeks={heatmapWeeks} />
       </Card>
     </div>
