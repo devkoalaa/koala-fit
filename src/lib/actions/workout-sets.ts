@@ -86,7 +86,7 @@ export async function deleteSet(workoutIdInput: string, exerciseId: string, setN
 // musculação. Quem não passa nada continua escrevendo no bloco 1.
 const cardioSchema = z.object({
   exerciseId: z.uuid(),
-  entryNumber: z.number().int().min(1).max(20).default(1),
+  entryNumber: z.number().int().min(1).max(1000).default(1),
   durationSeconds: z.number().int().min(1),
   distanceMeters: z.number().min(0).optional(),
   inclinePercent: z.number().min(0).max(50).optional(),
@@ -120,7 +120,7 @@ export async function logCardio(workoutIdInput: string, input: z.input<typeof ca
 
 const deleteCardioSchema = z.object({
   exerciseId: z.uuid(),
-  entryNumber: z.number().int().min(1).max(20),
+  entryNumber: z.number().int().min(1).max(1000),
 });
 
 export async function deleteCardio(workoutIdInput: string, exerciseId: string, entryNumber: number) {

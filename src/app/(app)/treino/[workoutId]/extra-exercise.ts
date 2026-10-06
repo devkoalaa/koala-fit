@@ -1,7 +1,7 @@
 import "server-only";
 import type { cardioSessions, sets } from "@/db/schema";
 import { getLastPerformance } from "@/lib/workout-data";
-import type { ExerciseSession, LoggedCardio, LoggedSet } from "./types";
+import { CARDIO_ENTRY_SLOT, type ExerciseSession, type LoggedCardio, type LoggedSet } from "./types";
 
 type SetRow = typeof sets.$inferSelect;
 type CardioRow = typeof cardioSessions.$inferSelect;
@@ -12,9 +12,14 @@ export function mapLoggedSets(rows: SetRow[], exerciseId: string): LoggedSet[] {
     .map((s) => ({ setNumber: s.setNumber, reps: s.reps, weightKg: Number(s.weightKg) }));
 }
 
-export function mapLoggedCardio(rows: CardioRow[], exerciseId: string): LoggedCardio[] {
+export function mapLoggedCardio(rows: CardioRow[], exerciseId: string, entryOffset = 0): LoggedCardio[] {
   return rows
-    .filter((c) => c.exerciseId === exerciseId)
+    .filter(
+      (c) =>
+        c.exerciseId === exerciseId &&
+        c.entryNumber > entryOffset &&
+        c.entryNumber <= entryOffset + CARDIO_ENTRY_SLOT,
+    )
     .sort((a, b) => a.entryNumber - b.entryNumber)
     .map((c) => ({
       entryNumber: c.entryNumber,
@@ -53,6 +58,7 @@ export async function buildExtraSession(
     lastPerformance,
     loggedCardio: mapLoggedCardio(cardioRows, exercise.id),
     suggestProgression: false,
+    entryOffset: 0,
     isExtra: true,
   };
 }

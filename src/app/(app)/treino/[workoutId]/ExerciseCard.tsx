@@ -38,7 +38,7 @@ function defaultCardioRow(item: ExerciseSession, entryNumber: number): CardioRow
 // Sem nada registrado, mostra um bloco em branco com o alvo da rotina; com
 // blocos já registrados, mostra todos (e o "+ Bloco extra" adiciona mais).
 function buildCardioRows(item: ExerciseSession): CardioRow[] {
-  if (item.loggedCardio.length === 0) return [defaultCardioRow(item, 1)];
+  if (item.loggedCardio.length === 0) return [defaultCardioRow(item, item.entryOffset + 1)];
 
   return item.loggedCardio.map((c) => ({
     entryNumber: c.entryNumber,

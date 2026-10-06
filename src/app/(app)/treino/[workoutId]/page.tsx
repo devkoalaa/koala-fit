@@ -7,7 +7,7 @@ import { getLastPerformance } from "@/lib/workout-data";
 import { shouldSuggestProgression } from "@/lib/progression";
 import { WorkoutSession } from "./WorkoutSession";
 import { buildExtraSession, mapLoggedCardio, mapLoggedSets } from "./extra-exercise";
-import type { ExerciseSession } from "./types";
+import { CARDIO_ENTRY_SLOT, type ExerciseSession } from "./types";
 
 export default async function TreinoPage({
   params,
@@ -54,8 +54,14 @@ export default async function TreinoPage({
   const loggedSets = await db.select().from(sets).where(eq(sets.workoutId, workoutId));
   const loggedCardio = await db.select().from(cardioSessions).where(eq(cardioSessions.workoutId, workoutId));
 
+  // Quantas vezes o exercício já apareceu antes nesta rotina.
+  const occurrences = routineItems.map(
+    (item, index) => routineItems.slice(0, index).filter((prev) => prev.exerciseId === item.exerciseId).length,
+  );
+
   const exerciseSessions: ExerciseSession[] = await Promise.all(
-    routineItems.map(async (item) => {
+    routineItems.map(async (item, index) => {
+      const entryOffset = occurrences[index] * CARDIO_ENTRY_SLOT;
       const lastPerformance =
         item.exerciseType === "weight" ? await getLastPerformance(user.id, item.exerciseId, workoutId) : [];
       const suggestProgression =
@@ -82,8 +88,9 @@ export default async function TreinoPage({
         notes: item.notes,
         loggedSets: mapLoggedSets(loggedSets, item.exerciseId),
         lastPerformance,
-        loggedCardio: mapLoggedCardio(loggedCardio, item.exerciseId),
+        loggedCardio: mapLoggedCardio(loggedCardio, item.exerciseId, entryOffset),
         suggestProgression,
+        entryOffset,
       };
     }),
   );
