@@ -15,7 +15,21 @@ type SetRow = {
   reps: number;
   weightKg: number;
   done: boolean;
+  // Valores que estão no banco; editar depois de concluir libera o "Salvar".
+  saved: string | null;
 };
+
+function setSnapshot(row: Pick<SetRow, "reps" | "weightKg">): string {
+  return `${row.reps}|${row.weightKg}`;
+}
+
+function cardioSnapshot(row: Pick<CardioRow, "durationMin" | "distanceKm" | "inclinePercent">): string {
+  return `${row.durationMin}|${row.distanceKm}|${row.inclinePercent}`;
+}
+
+function isDirty(row: { done: boolean; saved: string | null }, snapshot: string): boolean {
+  return row.done && row.saved !== snapshot;
+}
 
 type CardioRow = {
   entryNumber: number;
@@ -23,6 +37,7 @@ type CardioRow = {
   distanceKm: number;
   inclinePercent: number;
   done: boolean;
+  saved: string | null;
 };
 
 function defaultCardioRow(item: ExerciseSession, entryNumber: number): CardioRow {
@@ -32,6 +47,7 @@ function defaultCardioRow(item: ExerciseSession, entryNumber: number): CardioRow
     distanceKm: (item.targetDistanceMeters ?? 0) / 1000,
     inclinePercent: 0,
     done: false,
+    saved: null,
   };
 }
 
@@ -40,13 +56,15 @@ function defaultCardioRow(item: ExerciseSession, entryNumber: number): CardioRow
 function buildCardioRows(item: ExerciseSession): CardioRow[] {
   if (item.loggedCardio.length === 0) return [defaultCardioRow(item, item.entryOffset + 1)];
 
-  return item.loggedCardio.map((c) => ({
-    entryNumber: c.entryNumber,
-    durationMin: Math.round(c.durationSeconds / 60),
-    distanceKm: (c.distanceMeters ?? 0) / 1000,
-    inclinePercent: c.inclinePercent ?? 0,
-    done: true,
-  }));
+  return item.loggedCardio.map((c) => {
+    const row = {
+      entryNumber: c.entryNumber,
+      durationMin: Math.round(c.durationSeconds / 60),
+      distanceKm: (c.distanceMeters ?? 0) / 1000,
+      inclinePercent: c.inclinePercent ?? 0,
+    };
+    return { ...row, done: true, saved: cardioSnapshot(row) };
+  });
 }
 
 function buildRows(item: ExerciseSession, count: number): SetRow[] {
@@ -59,6 +77,7 @@ function buildRows(item: ExerciseSession, count: number): SetRow[] {
       reps: logged?.reps ?? last?.reps ?? item.targetRepsMin ?? 10,
       weightKg: logged?.weightKg ?? last?.weightKg ?? 0,
       done: Boolean(logged),
+      saved: logged ? setSnapshot(logged) : null,
     };
   });
 }
@@ -115,7 +134,9 @@ export function ExerciseCard({
   }
 
   function completeSet(row: SetRow) {
-    updateRow(row.setNumber, { done: true });
+    if (row.done && !isDirty(row, setSnapshot(row))) return;
+    const isCorrection = row.done;
+    updateRow(row.setNumber, { done: true, saved: setSnapshot(row) });
     startTransition(() =>
       logSet(workoutId, {
         exerciseId: item.exerciseId,
@@ -124,7 +145,8 @@ export function ExerciseCard({
         weightKg: row.weightKg,
       }),
     );
-    onSetLogged();
+    // Corrigir uma série já feita não reinicia o descanso.
+    if (!isCorrection) onSetLogged();
   }
 
   function addExtraSet() {
@@ -135,6 +157,7 @@ export function ExerciseCard({
         reps: prev[prev.length - 1]?.reps ?? item.targetRepsMin ?? 10,
         weightKg: prev[prev.length - 1]?.weightKg ?? 0,
         done: false,
+        saved: null,
       },
     ]);
   }
@@ -146,7 +169,8 @@ export function ExerciseCard({
   }
 
   function completeCardio(row: CardioRow) {
-    updateCardioRow(row.entryNumber, { done: true });
+    if (row.done && !isDirty(row, cardioSnapshot(row))) return;
+    updateCardioRow(row.entryNumber, { done: true, saved: cardioSnapshot(row) });
     startTransition(() =>
       logCardio(workoutId, {
         exerciseId: item.exerciseId,
@@ -302,11 +326,13 @@ export function ExerciseCard({
                       </div>
                       <Button
                         size="md"
-                        variant={row.done ? "secondary" : "primary"}
+                        variant={row.done && !isDirty(row, setSnapshot(row)) ? "secondary" : "primary"}
                         onClick={() => completeSet(row)}
                         disabled={pending}
                       >
-                        {row.done ? (
+                        {isDirty(row, setSnapshot(row)) ? (
+                          "Salvar alteração"
+                        ) : row.done ? (
                           <>
                             Série concluída{" "}
                             <Check
@@ -382,11 +408,13 @@ export function ExerciseCard({
                       }
                     />
                     <Button
-                      variant={row.done ? "secondary" : "primary"}
+                      variant={row.done && !isDirty(row, cardioSnapshot(row)) ? "secondary" : "primary"}
                       onClick={() => completeCardio(row)}
                       disabled={pending}
                     >
-                      {row.done ? (
+                      {isDirty(row, cardioSnapshot(row)) ? (
+                        "Salvar alteração"
+                      ) : row.done ? (
                         <>
                           Registrado{" "}
                           <Check
