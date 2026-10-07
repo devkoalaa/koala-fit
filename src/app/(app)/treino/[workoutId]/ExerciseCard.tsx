@@ -2,11 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { Lightbulb, Check, ChevronDown, Trash2, Info } from "lucide-react";
+import { Sheet } from "@/design-system/components/Sheet";
 import { Card } from "@/design-system/components/Card";
 import { NumberStepper } from "@/design-system/components/NumberStepper";
 import { Button } from "@/design-system/components/Button";
 import { cn } from "@/lib/cn";
 import { getLoadHint } from "@/lib/load-hints";
+import { getExerciseGuide, isBodyweightExercise } from "@/lib/exercise-guides";
 import { logSet, logCardio, deleteCardio } from "@/lib/actions/workout-sets";
 import type { ExerciseSession } from "./types";
 
@@ -104,6 +106,17 @@ export function ExerciseCard({
   );
   const [pending, startTransition] = useTransition();
   const loadHint = item.exerciseType === "weight" ? getLoadHint(item.exerciseName) : null;
+  const guide = getExerciseGuide(item.exerciseName);
+  const [guideOpen, setGuideOpen] = useState(false);
+  // Peso corporal começa sem o campo de carga; aparece se já houver carga
+  // registrada (agora ou da última vez) ou se o usuário pedir.
+  const bodyweight = item.exerciseType === "weight" && isBodyweightExercise(item.exerciseName);
+  const [showLoad, setShowLoad] = useState(
+    () =>
+      !bodyweight ||
+      item.loggedSets.some((s) => s.weightKg > 0) ||
+      item.lastPerformance.some((s) => s.weightKg > 0),
+  );
 
   const [cardioRows, setCardioRows] = useState<CardioRow[]>(() =>
     buildCardioRows(item),
@@ -202,16 +215,33 @@ export function ExerciseCard({
 
   return (
     <Card padded={false} className="overflow-hidden">
+      <div className="flex items-center">
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left"
+        aria-expanded={expanded}
+        className="min-w-0 flex-1 py-3.5 pl-4 text-left"
       >
-        <div>
-          <p className="font-semibold text-text">{item.exerciseName}</p>
-          <p className="text-sm text-text-secondary">{target}</p>
-        </div>
-        <div className="flex items-center gap-2">
+        <p className="font-semibold text-text">{item.exerciseName}</p>
+        <p className="text-sm text-text-secondary">{target}</p>
+      </button>
+      {guide && (
+        <button
+          type="button"
+          onClick={() => setGuideOpen(true)}
+          className="flex h-11 w-11 shrink-0 items-center justify-center text-text-tertiary"
+          aria-label={`Como fazer ${item.exerciseName}`}
+        >
+          <Info className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={onToggle}
+        tabIndex={-1}
+        aria-hidden="true"
+        className="flex shrink-0 items-center gap-2 self-stretch pr-4 pl-2"
+      >
           {item.exerciseType === "weight" ? (
             <span
               className={cn(
@@ -244,8 +274,8 @@ export function ExerciseCard({
             strokeWidth={2}
             aria-hidden="true"
           />
-        </div>
       </button>
+      </div>
 
       <div
         className={cn(
@@ -265,7 +295,7 @@ export function ExerciseCard({
                   aria-hidden="true"
                 />
                 Na última sessão você fez {item.targetRepsMax} reps em todas as
-                séries — hora de subir a carga.
+                séries — {bodyweight && !showLoad ? `hora de dificultar o exercício${guide ? " (veja o ⓘ)" : ""}.` : "hora de subir a carga."}
               </div>
             )}
             {item.notes && (
@@ -298,7 +328,8 @@ export function ExerciseCard({
                         </span>
                         {last && (
                           <span className="text-xs text-text-tertiary">
-                            Última vez: {last.reps}x{last.weightKg}kg
+                            Última vez:{" "}
+                            {last.weightKg > 0 ? `${last.reps}x${last.weightKg}kg` : `${last.reps} reps`}
                           </span>
                         )}
                       </div>
@@ -312,6 +343,7 @@ export function ExerciseCard({
                             updateRow(row.setNumber, { reps: v })
                           }
                         />
+                        {showLoad && (
                         <NumberStepper
                           label="Carga"
                           value={row.weightKg}
@@ -323,6 +355,7 @@ export function ExerciseCard({
                             updateRow(row.setNumber, { weightKg: v })
                           }
                         />
+                        )}
                       </div>
                       <Button
                         size="md"
@@ -355,6 +388,15 @@ export function ExerciseCard({
                 >
                   + Série extra
                 </button>
+                {!showLoad && (
+                  <button
+                    type="button"
+                    onClick={() => setShowLoad(true)}
+                    className="-mt-2 min-h-11 text-sm text-text-secondary"
+                  >
+                    + Usar carga (caneleira, anilha)
+                  </button>
+                )}
               </>
             ) : (
               <>
@@ -441,6 +483,23 @@ export function ExerciseCard({
           </div>
         </div>
       </div>
+      {guide && (
+        <Sheet open={guideOpen} onClose={() => setGuideOpen(false)} title={item.exerciseName}>
+          <div className="flex max-h-[65vh] flex-col gap-4 overflow-y-auto pb-2">
+            <p className="text-sm text-text-secondary">{guide.summary}</p>
+            {guide.sections.map((section) => (
+              <div key={section.title} className="flex flex-col gap-1.5">
+                <p className="text-sm font-semibold text-text">{section.title}</p>
+                <ul className="flex list-disc flex-col gap-1 pl-5 text-sm text-text-secondary">
+                  {section.items.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </Sheet>
+      )}
     </Card>
   );
 }
