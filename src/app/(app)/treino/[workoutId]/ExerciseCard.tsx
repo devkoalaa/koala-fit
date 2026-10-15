@@ -288,9 +288,9 @@ export function ExerciseCard({
         <div className="overflow-hidden">
           <div className="flex flex-col gap-3 px-4 py-4">
             {item.suggestProgression && (
-              <div className="flex items-start gap-2 rounded-md bg-accent-soft px-3 py-2 text-sm text-accent-fg">
+              <div className="flex items-start gap-2 rounded-md bg-accent-soft px-3 py-2 text-sm text-text">
                 <Lightbulb
-                  className="mt-0.5 h-4 w-4 shrink-0"
+                  className="mt-0.5 h-4 w-4 shrink-0 text-accent"
                   strokeWidth={2}
                   aria-hidden="true"
                 />
