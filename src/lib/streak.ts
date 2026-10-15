@@ -10,7 +10,8 @@ export type StreakSummary = {
   protectorsAvailable: number;
 };
 
-export type DayStatus = "done" | "bonus" | "pending" | "missed" | "off-schedule";
+// "covered": scheduled day that was missed but made up by an off-schedule workout the same week.
+export type DayStatus = "done" | "bonus" | "covered" | "pending" | "missed" | "off-schedule";
 
 export type WeekDayInfo = {
   date: string;
@@ -185,7 +186,7 @@ export async function getCurrentWeekStatus(userId: string): Promise<{
     } else if (workoutDateSet.has(d)) {
       status = "done";
     } else if (coveredByBonus.has(d)) {
-      status = "done";
+      status = "covered";
     } else if (d < today) {
       status = "missed";
     } else {
@@ -195,7 +196,7 @@ export async function getCurrentWeekStatus(userId: string): Promise<{
     return { date: d, weekday, status };
   });
 
-  const doneCount = days.filter((d) => d.status === "done").length;
+  const doneCount = days.filter((d) => d.status === "done" || d.status === "covered").length;
 
   return { days, scheduledCount: scheduledDaysInWeek.length, doneCount };
 }

@@ -3,9 +3,19 @@ import { cn } from "@/lib/cn";
 import { WEEKDAY_LABEL_PT } from "@/lib/date";
 import type { WeekDayInfo } from "@/lib/streak";
 
+const STATUS_LABEL: Record<WeekDayInfo["status"], string> = {
+  done: "Treinou",
+  bonus: "Treino extra",
+  covered: "Faltou, mas compensou com treino extra",
+  pending: "Pendente",
+  missed: "Faltou",
+  "off-schedule": "Descanso",
+};
+
 const STATUS_CLASSES: Record<WeekDayInfo["status"], string> = {
   done: "bg-primary text-primary-fg border-primary",
   bonus: "bg-accent text-accent-fg border-accent",
+  covered: "bg-transparent text-text-tertiary border-dashed border-text-tertiary",
   pending: "bg-transparent text-text-secondary border-border",
   missed: "bg-danger-soft text-danger border-danger/40",
   "off-schedule": "bg-transparent text-text-tertiary border-transparent",
@@ -22,11 +32,12 @@ export function WeekStrip({ days }: { days: WeekDayInfo[] }) {
               "flex h-9 w-9 items-center justify-center rounded-full border text-sm font-semibold",
               STATUS_CLASSES[day.status],
             )}
-            title={day.status}
+            title={STATUS_LABEL[day.status]}
+            aria-label={`${WEEKDAY_LABEL_PT[day.weekday]}: ${STATUS_LABEL[day.status]}`}
           >
             {day.status === "done" && <Check className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />}
             {day.status === "bonus" && <Star className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />}
-            {day.status === "missed" && <X className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />}
+            {(day.status === "missed" || day.status === "covered") && <X className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />}
           </div>
         </div>
       ))}
