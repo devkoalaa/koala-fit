@@ -7,7 +7,7 @@ import { db } from "@/db/client";
 import { workouts, sets, bodyWeightLogs } from "@/db/schema";
 import { toISODate, diffDays, formatDateBR } from "@/lib/date";
 import { getStreakSummary, getCurrentWeekStatus } from "@/lib/streak";
-import { getNextRoutine } from "@/lib/routines";
+import { getRoutineChoices } from "@/lib/routines";
 import { detectPersonalRecords } from "@/lib/personal-records";
 import { buildTodayMessage } from "@/lib/insights";
 import { formatWeeklyGoal } from "@/lib/weekly-goal";
@@ -31,10 +31,10 @@ export default async function HojePage() {
     .where(and(eq(workouts.userId, user.id), eq(workouts.date, today)))
     .limit(1);
 
-  const [streak, week, nextRoutine] = await Promise.all([
+  const [streak, week, routineChoices] = await Promise.all([
     getStreakSummary(user.id),
     getCurrentWeekStatus(user.id),
-    getNextRoutine(user.id),
+    getRoutineChoices(user.id),
   ]);
 
   let message: string;
@@ -152,8 +152,8 @@ export default async function HojePage() {
             </Card>
           </Link>
         )
-      ) : nextRoutine ? (
-        <StartWorkoutButton routineId={nextRoutine.id} label={`Começar treino: ${nextRoutine.name}`} />
+      ) : routineChoices.next ? (
+        <StartWorkoutButton routines={routineChoices.routines} suggested={routineChoices.next} />
       ) : (
         <EmptyState
           title="Crie sua primeira rotina"
