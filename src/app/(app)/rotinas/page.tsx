@@ -16,6 +16,7 @@ export default async function RotinasPage() {
     .select({
       id: routines.id,
       name: routines.name,
+      archivedAt: routines.archivedAt,
       exerciseCount: sql<number>`count(${routineExercises.id})`,
     })
     .from(routines)
@@ -23,6 +24,9 @@ export default async function RotinasPage() {
     .where(eq(routines.userId, user.id))
     .groupBy(routines.id)
     .orderBy(routines.createdAt);
+
+  const active = items.filter((r) => r.archivedAt == null);
+  const archived = items.filter((r) => r.archivedAt != null);
 
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 pt-6 pb-4">
@@ -34,30 +38,50 @@ export default async function RotinasPage() {
           description="Crie sua primeira rotina de treino para começar."
         />
       ) : (
-        <div className="flex flex-col gap-3">
-          {items.map((r) => (
-            <Link
-              key={r.id}
-              href={`/rotinas/${r.id}`}
-              className="block transition-transform duration-150 active:scale-[0.98]"
-            >
-              <Card className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-text">{r.name}</p>
-                  <p className="text-sm text-text-secondary">
-                    {r.exerciseCount} exercício{Number(r.exerciseCount) === 1 ? "" : "s"}
-                  </p>
-                </div>
-                <span className="text-text-tertiary" aria-hidden="true">
-                  ›
-                </span>
-              </Card>
-            </Link>
-          ))}
-        </div>
+        <>
+          <RoutineList items={active} />
+          {archived.length > 0 && (
+            <div className="flex flex-col gap-3 pt-2">
+              <h2 className="text-sm font-medium text-text-secondary">Arquivadas</h2>
+              <RoutineList items={archived} muted />
+            </div>
+          )}
+        </>
       )}
 
       <NewRoutineSheet />
+    </div>
+  );
+}
+
+function RoutineList({
+  items,
+  muted = false,
+}: {
+  items: { id: string; name: string; exerciseCount: number }[];
+  muted?: boolean;
+}) {
+  return (
+    <div className={muted ? "flex flex-col gap-3 opacity-60" : "flex flex-col gap-3"}>
+      {items.map((r) => (
+        <Link
+          key={r.id}
+          href={`/rotinas/${r.id}`}
+          className="block transition-transform duration-150 active:scale-[0.98]"
+        >
+          <Card className="flex items-center justify-between">
+            <div>
+              <p className="font-semibold text-text">{r.name}</p>
+              <p className="text-sm text-text-secondary">
+                {r.exerciseCount} exercício{Number(r.exerciseCount) === 1 ? "" : "s"}
+              </p>
+            </div>
+            <span className="text-text-tertiary" aria-hidden="true">
+              ›
+            </span>
+          </Card>
+        </Link>
+      ))}
     </div>
   );
 }

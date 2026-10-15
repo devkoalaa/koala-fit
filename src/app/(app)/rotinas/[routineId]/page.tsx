@@ -49,7 +49,7 @@ export default async function RoutineDetailPage({
 
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 pt-6 pb-4">
-      <RoutineHeader routineId={routine.id} initialName={routine.name} />
+      <RoutineHeader routineId={routine.id} initialName={routine.name} archived={routine.archivedAt != null} />
 
       {items.length === 0 ? (
         <EmptyState

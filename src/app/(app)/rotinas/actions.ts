@@ -39,6 +39,20 @@ export async function renameRoutine(routineId: string, name: string) {
   revalidatePath("/rotinas");
 }
 
+export async function setRoutineArchived(routineId: string, archived: boolean) {
+  const user = await requireUser();
+  const id = z.uuid().parse(routineId);
+
+  await db
+    .update(routines)
+    .set({ archivedAt: archived ? new Date() : null, updatedAt: new Date() })
+    .where(and(eq(routines.id, id), eq(routines.userId, user.id)));
+
+  revalidatePath(`/rotinas/${id}`);
+  revalidatePath("/rotinas");
+  revalidatePath("/hoje");
+}
+
 export async function deleteRoutine(routineId: string) {
   const user = await requireUser();
   const id = z.uuid().parse(routineId);

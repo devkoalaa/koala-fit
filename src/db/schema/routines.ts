@@ -21,6 +21,9 @@ export const routines = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
+    // Archived routines leave the rotation and the start-workout picker, but
+    // keep their name on past workouts. Null = active.
+    archivedAt: timestamp("archived_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

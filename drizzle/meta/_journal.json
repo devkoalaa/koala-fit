@@ -29,6 +29,13 @@
       "when": 1791290651944,
       "tag": "0003_exercise_notes_and_goal_range",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792068874095,
+      "tag": "0004_routine_archived_at",
+      "breakpoints": true
     }
   ]
 }
