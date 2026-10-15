@@ -154,11 +154,11 @@ export function WorkoutSession({
 
             {result.records.length > 0 && (
               <Card className="w-full bg-accent-soft text-left">
-                <p className="mb-2 flex items-center gap-1.5 font-semibold text-accent-fg">
-                  <Trophy className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+                <p className="mb-2 flex items-center gap-1.5 font-semibold text-text">
+                  <Trophy className="h-4 w-4 text-accent" strokeWidth={2} aria-hidden="true" />
                   Recordes pessoais!
                 </p>
-                <ul className="flex flex-col gap-1 text-sm text-accent-fg">
+                <ul className="flex flex-col gap-1 text-sm text-text">
                   {result.records.map((r, i) => (
                     <li key={i}>
                       {r.exerciseName} —{" "}
