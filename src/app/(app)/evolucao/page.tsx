@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { and, eq, gte, sql } from "drizzle-orm";
+import { and, desc, eq, gte, sql } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/db/client";
 import { workouts, sets, exercises, bodyWeightLogs, bodyCompositionLogs, trainingSchedule } from "@/db/schema";
@@ -12,6 +12,7 @@ import { HeatmapCalendar, type HeatmapDay } from "@/components/charts/HeatmapCal
 import { PeriodFilter } from "@/components/PeriodFilter";
 import { BODY_METRICS, findBodyMetric, formatMetric, lastPerDay, metricValue } from "@/lib/body-composition";
 import { SearchParamSelect } from "./SearchParamSelect";
+import { WeightLogsSheet } from "./WeightLogsSheet";
 
 const HEATMAP_WEEKS = 16;
 
@@ -33,6 +34,15 @@ export default async function EvolucaoPage({
     .from(bodyWeightLogs)
     .where(and(eq(bodyWeightLogs.userId, user.id), periodStart ? gte(bodyWeightLogs.date, periodStart) : undefined))
     .orderBy(bodyWeightLogs.date);
+
+  // All weigh-ins (not period-filtered), newest first, for the edit/delete list.
+  const weightLogs = (
+    await db
+      .select({ id: bodyWeightLogs.id, date: bodyWeightLogs.date, weightKg: bodyWeightLogs.weightKg })
+      .from(bodyWeightLogs)
+      .where(eq(bodyWeightLogs.userId, user.id))
+      .orderBy(desc(bodyWeightLogs.date))
+  ).map((r) => ({ ...r, weightKg: Number(r.weightKg) }));
 
   const weightPoints = weightRows.map((r) => ({
     label: formatDateBR(r.date).slice(0, 5),
@@ -156,7 +166,10 @@ export default async function EvolucaoPage({
       <PeriodFilter current={period} />
 
       <Card>
-        <p className="mb-2 font-semibold text-text">Peso corporal</p>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <p className="font-semibold text-text">Peso corporal</p>
+          <WeightLogsSheet logs={weightLogs} />
+        </div>
         <LineChart points={weightPoints} unit="kg" emptyLabel="Registre seu peso para ver o gráfico" />
       </Card>
 
