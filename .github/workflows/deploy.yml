@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build images
-        run: docker compose --profile migrate build
+        run: docker compose --profile migrate build --pull
 
       - name: Run migrations
         run: docker compose --profile migrate run --rm migrate
