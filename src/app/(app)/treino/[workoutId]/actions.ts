@@ -8,6 +8,7 @@ import { cardioSessions, exercises, sets, workouts } from "@/db/schema";
 import { reconcileStreak } from "@/lib/streak";
 import { detectPersonalRecords, type PersonalRecord } from "@/lib/personal-records";
 import { requireOwnedWorkout } from "@/lib/actions/workout-sets";
+import { computeWorkoutDurationMinutes } from "@/lib/workout-duration";
 import { buildExtraSession } from "./extra-exercise";
 import type { ExerciseSession } from "./types";
 
@@ -26,7 +27,18 @@ export async function finishWorkout(
   const { user, workout, workoutId } = await requireOwnedWorkout(workoutIdInput);
   const feeling = feelingSchema.parse(feelingInput);
 
-  const durationMinutes = Math.max(1, Math.round((Date.now() - workout.createdAt.getTime()) / 60_000));
+  const activity = await db
+    .select({ at: sets.createdAt })
+    .from(sets)
+    .where(eq(sets.workoutId, workoutId))
+    .unionAll(
+      db.select({ at: cardioSessions.createdAt }).from(cardioSessions).where(eq(cardioSessions.workoutId, workoutId)),
+    );
+  const durationMinutes = computeWorkoutDurationMinutes(
+    workout.createdAt,
+    activity.map((a) => a.at),
+    new Date(),
+  );
 
   await db.update(workouts).set({ durationMinutes, feeling }).where(eq(workouts.id, workoutId));
 
