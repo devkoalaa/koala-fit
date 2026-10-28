@@ -11,3 +11,4 @@ export * from "./training-schedule";
 export * from "./streak-state";
 export * from "./notes";
 export * from "./body-composition-logs";
+export * from "./body-assessments";

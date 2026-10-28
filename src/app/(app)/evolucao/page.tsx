@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import { and, desc, eq, gte, sql } from "drizzle-orm";
+import { and, desc, eq, gte, lte, sql } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/db/client";
-import { workouts, sets, exercises, bodyWeightLogs, bodyCompositionLogs, trainingSchedule } from "@/db/schema";
+import { workouts, sets, exercises, bodyWeightLogs, bodyCompositionLogs, bodyAssessments, trainingSchedule } from "@/db/schema";
 import { toISODate, addDays, startOfWeek, weekdayOf, formatDateBR } from "@/lib/date";
 import { isPeriod, periodStartDate, type Period } from "@/lib/period";
 import { Card } from "@/design-system/components/Card";
@@ -13,6 +13,7 @@ import { PeriodFilter } from "@/components/PeriodFilter";
 import { BODY_METRICS, findBodyMetric, formatMetric, lastPerDay, metricValue } from "@/lib/body-composition";
 import { SearchParamSelect } from "./SearchParamSelect";
 import { WeightLogsSheet } from "./WeightLogsSheet";
+import { ProfessionalAssessmentCard } from "./ProfessionalAssessmentCard";
 
 const HEATMAP_WEEKS = 16;
 
@@ -67,6 +68,27 @@ export default async function EvolucaoPage({
     return value === null ? [] : [{ label: formatDateBR(r.date).slice(0, 5), value }];
   });
   const latestComposition = compositionRows.at(-1);
+
+  // Avaliação profissional mais recente (fora do filtro de período: são raras).
+  const [latestAssessment] = await db
+    .select()
+    .from(bodyAssessments)
+    .where(eq(bodyAssessments.userId, user.id))
+    .orderBy(desc(bodyAssessments.assessedAt))
+    .limit(1);
+  const [scaleBeforeAssessment] = latestAssessment
+    ? await db
+        .select()
+        .from(bodyCompositionLogs)
+        .where(
+          and(
+            eq(bodyCompositionLogs.userId, user.id),
+            lte(bodyCompositionLogs.measuredAt, latestAssessment.assessedAt),
+          ),
+        )
+        .orderBy(desc(bodyCompositionLogs.measuredAt))
+        .limit(1)
+    : [];
 
   const exerciseOptions = await db
     .selectDistinct({ id: exercises.id, name: exercises.name })
@@ -209,6 +231,10 @@ export default async function EvolucaoPage({
           </p>
         )}
       </Card>
+
+      {latestAssessment && (
+        <ProfessionalAssessmentCard assessment={latestAssessment} scale={scaleBeforeAssessment} />
+      )}
 
       <Card>
         <div className="mb-2 flex items-center justify-between gap-2">
