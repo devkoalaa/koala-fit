@@ -43,6 +43,13 @@
       "when": 1793190933342,
       "tag": "0005_body_assessments",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793191790739,
+      "tag": "0006_food_logs",
+      "breakpoints": true
     }
   ]
 }
