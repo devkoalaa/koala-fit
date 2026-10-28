@@ -57,6 +57,13 @@
       "when": 1793193212980,
       "tag": "0007_nutrition_goals",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793193444971,
+      "tag": "0008_food_logs_telegram_message",
+      "breakpoints": true
     }
   ]
 }

@@ -41,6 +41,9 @@ export const foodLogs = pgTable(
     notes: text("notes"),
     // De onde veio: "telegram" (texto), "telegram-foto" ou "manual".
     source: text("source").notNull().default("manual"),
+    // Mensagem do Telegram que originou o item: o botão Desfazer apaga todos os
+    // itens da mesma mensagem.
+    telegramMessageId: integer("telegram_message_id"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
