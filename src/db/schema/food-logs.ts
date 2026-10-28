@@ -11,8 +11,8 @@ import {
 import { users } from "./users";
 
 // Diário alimentar: cada item que o usuário relata ter comido ou bebido, com a
-// estimativa de calorias e macros. Por enquanto é gravado direto no banco pelo
-// Claude a partir da conversa; o app ainda não tem tela para isso.
+// estimativa de calorias e macros. O bot do Telegram grava (texto ou foto,
+// estimados pela API do Claude); a aba Alimentação mostra e permite apagar.
 export const foodLogs = pgTable(
   "food_logs",
   {
@@ -39,6 +39,8 @@ export const foodLogs = pgTable(
     // Água e bebidas sem caloria também entram, para somar a hidratação.
     waterMl: integer("water_ml"),
     notes: text("notes"),
+    // De onde veio: "telegram" (texto), "telegram-foto" ou "manual".
+    source: text("source").notNull().default("manual"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

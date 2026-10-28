@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calendar, TrendingUp, ClipboardList, CircleUserRound } from "lucide-react";
+import { Home, Calendar, TrendingUp, Utensils, ClipboardList, CircleUserRound } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const TABS = [
   { href: "/hoje", label: "Hoje", Icon: Home },
   { href: "/historico", label: "Histórico", Icon: Calendar },
   { href: "/evolucao", label: "Evolução", Icon: TrendingUp },
+  { href: "/alimentacao", label: "Dieta", Icon: Utensils },
   { href: "/rotinas", label: "Rotinas", Icon: ClipboardList },
   { href: "/perfil", label: "Perfil", Icon: CircleUserRound },
 ] as const;

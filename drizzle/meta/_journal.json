@@ -50,6 +50,13 @@
       "when": 1793191790739,
       "tag": "0006_food_logs",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793193212980,
+      "tag": "0007_nutrition_goals",
+      "breakpoints": true
     }
   ]
 }
