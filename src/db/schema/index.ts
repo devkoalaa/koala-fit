@@ -13,3 +13,4 @@ export * from "./notes";
 export * from "./body-composition-logs";
 export * from "./body-assessments";
 export * from "./food-logs";
+export * from "./food-products";

@@ -64,6 +64,13 @@
       "when": 1793193444971,
       "tag": "0008_food_logs_telegram_message",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793386359920,
+      "tag": "0009_food_products",
+      "breakpoints": true
     }
   ]
 }
