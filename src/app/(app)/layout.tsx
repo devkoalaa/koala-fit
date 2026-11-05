@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { ToastProvider } from "@/design-system/components/Toast";
 import { BottomNav } from "@/components/BottomNav";
 import { PageTransition } from "@/components/PageTransition";
+import { ViewportRecovery } from "@/components/ViewportRecovery";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
@@ -24,6 +25,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <PageTransition>{children}</PageTransition>
       </div>
       <BottomNav />
+      <ViewportRecovery />
     </ToastProvider>
   );
 }
