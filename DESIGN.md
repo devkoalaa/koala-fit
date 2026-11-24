@@ -60,10 +60,12 @@ desejado). `strokeWidth={2}` é o padrão usado no app; `aria-hidden="true"`
 sempre que o ícone é puramente decorativo (label de texto já presente ao
 lado).
 
-A única exceção deliberada é o mascote coala como ícone do app/favicon
-(`src/app/icon.tsx`, `apple-icon.tsx`, `icons/[size]/route.tsx`) — esses
-continuam usando o emoji 🐨 renderizado via `next/og`, é a marca do produto,
-não um elemento de UI solto.
+A logo do app (coala com faixa âmbar e halter) fica em `public/`: `icon.png`
+(favicon 48px), `apple-icon.png` e `apple-touch-icon*.png` (180px) e
+`icons/icon-192.png`, `icon-512.png`, `icon-maskable-512.png` (PWA, a maskable
+tem margem extra pro corte em círculo do Android). São imagens estáticas
+apontadas em `layout.tsx` e `manifest.ts`; antes era o emoji 🐨 gerado via
+`next/og`.
 
 Mapeamento de humor (1-5, usado em Treino/Histórico) fica centralizado em
 `src/components/FeelingIcon.tsx`: `Frown/Annoyed/Meh/Smile/Laugh`.
