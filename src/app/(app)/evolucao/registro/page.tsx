@@ -8,6 +8,7 @@ import { bodyWeightLogs, doseLogs } from "@/db/schema";
 import { Card } from "@/design-system/components/Card";
 import { APP_TIMEZONE, addDays, diffDays, formatDateBR, toISODate } from "@/lib/date";
 import { DoseItem, type DoseEntry } from "./DoseItem";
+import { NewDoseSheet } from "./NewDoseSheet";
 
 // Tela sem link: só abre por 5 toques no título da Evolução (SecretTitle).
 export const metadata = { title: "Registro" };
@@ -110,6 +111,8 @@ export default async function RegistroPage() {
         </Link>
         <h1 className="text-2xl font-bold text-text">Doses</h1>
       </div>
+
+      <NewDoseSheet defaultDoseMg={currentDose ?? 2.5} />
 
       {last ? (
         <>
