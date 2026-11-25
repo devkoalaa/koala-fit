@@ -71,6 +71,13 @@
       "when": 1793386359920,
       "tag": "0009_food_products",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795618788936,
+      "tag": "0010_dose_logs",
+      "breakpoints": true
     }
   ]
 }

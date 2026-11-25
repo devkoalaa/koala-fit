@@ -14,6 +14,7 @@ import { BODY_METRICS, findBodyMetric, formatMetric, lastPerDay, metricValue } f
 import { SearchParamSelect } from "./SearchParamSelect";
 import { WeightLogsSheet } from "./WeightLogsSheet";
 import { ProfessionalAssessmentCard } from "./ProfessionalAssessmentCard";
+import { SecretTitle } from "./SecretTitle";
 
 const HEATMAP_WEEKS = 16;
 
@@ -183,7 +184,7 @@ export default async function EvolucaoPage({
 
   return (
     <div className="flex flex-1 flex-col gap-5 px-4 pt-6 pb-4">
-      <h1 className="text-2xl font-bold text-text">Evolução</h1>
+      <SecretTitle />
 
       <PeriodFilter current={period} />
 
